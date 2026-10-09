@@ -1,5 +1,5 @@
 import { dictionaries, residencePaths, routes, type Lang } from '../i18n';
-import type { Property } from './properties';
+import { countryOf, regionOf, type Property } from './properties';
 import type { Residence } from './residences';
 import { site } from './site';
 
@@ -45,8 +45,6 @@ export const residenceSchema = (lang: Lang, property: Property, residence: Resid
   const t = dictionaries[lang];
   const url = absolute(residencePaths(property.id)[lang]);
   const name = property.name[lang];
-  const location = property.location[lang];
-  const separator = location.lastIndexOf(', ');
   const area = (value: number) => ({ '@type': 'QuantitativeValue', value, unitCode: 'MTK' });
 
   return [
@@ -69,8 +67,8 @@ export const residenceSchema = (lang: Lang, property: Property, residence: Resid
       image: absolute(image),
       address: {
         '@type': 'PostalAddress',
-        addressRegion: location.slice(0, separator),
-        addressCountry: location.slice(separator + 2),
+        addressRegion: regionOf(property, lang),
+        addressCountry: countryOf(property, lang),
       },
       floorSize: area(residence.area),
       additionalProperty: { '@type': 'PropertyValue', name: t.residence.plot, value: residence.plot, unitCode: 'MTK' },
@@ -79,7 +77,8 @@ export const residenceSchema = (lang: Lang, property: Property, residence: Resid
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: site.name, item: absolute(routes.home[lang]) },
-        { '@type': 'ListItem', position: 2, name, item: url },
+        { '@type': 'ListItem', position: 2, name: t.residences.title, item: absolute(routes.residences[lang]) },
+        { '@type': 'ListItem', position: 3, name, item: url },
       ],
     },
   ];

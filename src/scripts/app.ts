@@ -1,5 +1,6 @@
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { initDossier } from './dossier';
+import { initFilters } from './filters';
 import { playIntro } from './intro';
 import { initMenu } from './menu';
 import { initPreviews } from './previews';
@@ -18,6 +19,7 @@ playIntro().then(() => {
 initMenu();
 initDossier();
 initPreviews();
+initFilters();
 initSliders();
 if (!reducedMotion) initReveals();
 

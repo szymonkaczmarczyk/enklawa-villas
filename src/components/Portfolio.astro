@@ -1,6 +1,6 @@
 ---
 import { properties } from '../data/properties';
-import { dictionaries, type Lang } from '../i18n';
+import { dictionaries, routes, type Lang } from '../i18n';
 import Button from './Button.astro';
 import PropertyCard from './PropertyCard.astro';
 
@@ -43,6 +43,10 @@ const more = properties.filter((property) => property.placement === 'more');
         }
       </ul>
     </div>
+
+    <div class="portfolio__all" data-reveal>
+      <Button href={routes.residences[lang]}>{t.residences.viewAll}</Button>
+    </div>
   </div>
 </section>
 
@@ -69,6 +73,10 @@ const more = properties.filter((property) => property.placement === 'more');
 
   .more {
     margin-top: var(--space-10);
+  }
+
+  .portfolio__all {
+    margin-top: var(--space-8);
   }
 
   .more__header {

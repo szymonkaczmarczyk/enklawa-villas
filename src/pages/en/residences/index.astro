@@ -1,0 +1,11 @@
+---
+import Residences from '../../../components/Residences.astro';
+import { dictionaries } from '../../../i18n';
+import Base from '../../../layouts/Base.astro';
+
+const { meta } = dictionaries.en;
+---
+
+<Base lang="en" route="residences" title={meta.residences.title} description={meta.residences.description}>
+  <Residences lang="en" />
+</Base>

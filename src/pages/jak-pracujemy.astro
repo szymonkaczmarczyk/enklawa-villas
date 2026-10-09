@@ -1,0 +1,11 @@
+---
+import Process from '../components/Process.astro';
+import { dictionaries } from '../i18n';
+import Base from '../layouts/Base.astro';
+
+const { meta } = dictionaries.pl;
+---
+
+<Base lang="pl" route="process" title={meta.process.title} description={meta.process.description}>
+  <Process lang="pl" />
+</Base>

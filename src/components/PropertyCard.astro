@@ -8,12 +8,13 @@ import Icon from './Icon.astro';
 interface Props {
   property: Property;
   lang: Lang;
-  level: 3 | 4;
+  level: 2 | 3 | 4;
+  placement?: Placement;
 }
 
-const { property, lang, level } = Astro.props;
+const { property, lang, level, placement = property.placement } = Astro.props;
 const t = dictionaries[lang];
-const Heading = level === 3 ? 'h3' : 'h4';
+const Heading = `h${level}` as const;
 const name = property.name[lang];
 const location = property.location[lang];
 const sizes: Record<Placement, string> = {
@@ -24,7 +25,7 @@ const sizes: Record<Placement, string> = {
 };
 ---
 
-<article class="card" data-placement={property.placement} aria-labelledby={`card-${property.id}`} data-card data-button-scope>
+<article class="card" data-placement={placement} aria-labelledby={`card-${property.id}`} data-card data-button-scope>
   <a class="card__overlay" href={residencePaths(property.id)[lang]} aria-labelledby={`card-${property.id}`}></a>
   <div class="card__media" data-card-media>
     <Picture
@@ -32,7 +33,7 @@ const sizes: Record<Placement, string> = {
       alt={property.alt[lang]}
       formats={['avif', 'webp']}
       widths={[480, 800, 1280, property.image.width]}
-      sizes={sizes[property.placement]}
+      sizes={sizes[placement]}
       quality={72}
       class="card__image"
       style={`object-position: ${property.focus}`}

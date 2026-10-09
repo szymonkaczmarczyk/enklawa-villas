@@ -1,0 +1,228 @@
+---
+import { countryKey, countryOf, properties, settings } from '../data/properties';
+import { countLabel, dictionaries, type Lang } from '../i18n';
+import Button from './Button.astro';
+import PropertyCard from './PropertyCard.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const r = t.residences;
+
+const countries = [...new Set(properties.map(countryKey))]
+  .map((key) => {
+    const matching = properties.filter((property) => countryKey(property) === key);
+    return { value: key, label: countryOf(matching[0], lang), count: matching.length };
+  })
+  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, t.numberLocale));
+
+const groups = [
+  { name: 'country', legend: r.country, options: countries },
+  {
+    name: 'setting',
+    legend: r.setting,
+    options: settings.map((setting) => ({
+      value: setting,
+      label: r.settings[setting],
+      count: properties.filter((property) => property.setting === setting).length,
+    })),
+  },
+];
+---
+
+<section class="residences container" aria-labelledby="residences-title">
+  <header class="residences__header">
+    <h1 class="t-h1" id="residences-title">{r.title}</h1>
+    <p class="t-lead muted">{r.lead}</p>
+  </header>
+
+  <form class="filters" aria-label={r.filters} data-filters>
+    {
+      groups.map((group) => (
+        <fieldset class="filters__group">
+          <legend class="filters__legend t-caps">{group.legend}</legend>
+          <div class="filters__options">
+            {[{ value: 'all', label: r.all, count: properties.length }, ...group.options].map((option) => (
+              <label class="filter">
+                <input class="filter__input visually-hidden" type="radio" name={group.name} value={option.value} checked={option.value === 'all'} />
+                <span>{option.label}</span>
+                <span class="filter__count" data-filter-count>
+                  {option.count}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ))
+    }
+  </form>
+
+  <p class="residences__status" role="status" data-filter-status data-forms={JSON.stringify(r.count)}>
+    {countLabel(properties.length, lang)}
+  </p>
+
+  <ul class="residences__grid" role="list">
+    {
+      properties.map((property) => (
+        <li class="residences__item" data-filter-item data-country={countryKey(property)} data-setting={property.setting}>
+          <PropertyCard property={property} lang={lang} level={2} placement="more" />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<section class="residences__closing container" aria-labelledby="residences-closing">
+  <h2 class="t-h2" id="residences-closing" data-reveal>{r.closingTitle}</h2>
+  <p class="t-lead muted" data-reveal>{r.closingText}</p>
+  <div data-reveal>
+    <Button variant="solid" data-dossier-open="buy">{t.cta}</Button>
+  </div>
+</section>
+
+<style>
+  .residences {
+    padding-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + var(--space-9));
+  }
+
+  .residences__header {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: var(--space-8);
+  }
+
+  .filters {
+    display: none;
+    flex-wrap: wrap;
+    gap: var(--space-6) var(--space-8);
+  }
+
+  :global(.js) .filters {
+    display: flex;
+  }
+
+  .filters__group {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .filters__legend {
+    margin-bottom: var(--space-3);
+    padding: 0;
+    color: var(--color-text-muted);
+  }
+
+  .filters__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--tap);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-line-strong);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out),
+      opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .filter__count {
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .filter:has(:checked) {
+    border-color: var(--color-text);
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+
+  .filter:has(:checked) .filter__count {
+    color: var(--color-bg);
+  }
+
+  .filter:has(:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  .filter:has(:disabled) {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .filter:not(:has(:checked, :disabled)):hover {
+      border-color: var(--color-text);
+    }
+  }
+
+  .residences__status {
+    margin-block: var(--space-7) var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .residences__grid {
+    display: grid;
+    gap: var(--space-8) var(--space-5);
+  }
+
+  .residences__item {
+    animation: residences-in var(--duration) var(--ease-out) both;
+  }
+
+  @keyframes residences-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .residences__closing {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    margin-top: var(--space-10);
+    padding-block: var(--space-9) var(--space-10);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .residences__closing p {
+    max-width: 52ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .residences__item {
+      animation: none;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .residences__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .residences__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

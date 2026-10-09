@@ -21,6 +21,8 @@ export const languages: Record<Lang, { short: string; name: string }> = {
 
 export const routes = {
   home: { pl: '/', en: '/en/' },
+  residences: { pl: '/rezydencje/', en: '/en/residences/' },
+  process: { pl: '/jak-pracujemy/', en: '/en/how-we-work/' },
   privacy: { pl: '/polityka-prywatnosci/', en: '/en/privacy-policy/' },
   terms: { pl: '/regulamin/', en: '/en/terms/' },
 } as const;
@@ -30,6 +32,11 @@ export type RouteKey = keyof typeof routes;
 export const formatPrice = (value: number, lang: Lang) => {
   const amount = new Intl.NumberFormat(dictionaries[lang].numberLocale).format(value);
   return lang === 'pl' ? `${amount}\u00a0PLN` : `PLN\u00a0${amount}`;
+};
+
+export const countLabel = (count: number, lang: Lang) => {
+  const forms = dictionaries[lang].residences.count;
+  return `${count} ${forms[new Intl.PluralRules(dictionaries[lang].numberLocale).select(count)] ?? forms.other}`;
 };
 
 export type LocalizedPaths = Record<Lang, string>;

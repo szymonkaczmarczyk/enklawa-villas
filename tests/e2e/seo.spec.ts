@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const pages = ['/', '/en/', '/regulamin/', '/en/terms/', '/polityka-prywatnosci/', '/en/privacy-policy/', '/rezydencje/cypel/', '/en/residences/cypel/'];
+const pages = ['/', '/en/', '/rezydencje/', '/en/residences/', '/jak-pracujemy/', '/en/how-we-work/', '/regulamin/', '/en/terms/', '/polityka-prywatnosci/', '/en/privacy-policy/', '/rezydencje/cypel/', '/en/residences/cypel/'];
 
 test('każda strona ma unikalny tytuł i opis', async ({ page }) => {
   const titles = new Set<string>();
@@ -16,7 +16,7 @@ test('każda strona ma unikalny tytuł i opis', async ({ page }) => {
 
 test('mapa strony zawiera wszystkie podstrony', async ({ request }) => {
   const body = await (await request.get('/sitemap.xml')).text();
-  expect(body.match(/<loc>/g)).toHaveLength(22);
+  expect(body.match(/<loc>/g)).toHaveLength(26);
   expect(body).toContain('https://enklawavillas.com/en/residences/skaly/');
 });
 
@@ -40,6 +40,8 @@ test('słowo „dossier” nie pojawia się w treści strony', async ({ page }) 
 test('każdy link i nagłówek ma dostępną nazwę', async ({ page }) => {
   for (const path of pages) {
     await page.goto(path);
+    await page.evaluate(() => document.querySelectorAll('details').forEach((details) => (details.open = true)));
+    await page.evaluate(() => Promise.all(document.getAnimations().map((animation) => animation.finished)));
     const unnamed = await page.evaluate(() =>
       [...document.querySelectorAll('a, h1, h2, h3, h4, h5, h6')]
         .filter((element) => {
@@ -80,6 +82,8 @@ test('dane strukturalne są poprawne i bez pól do uzupełnienia', async ({ page
     if (path === '/' || path === '/en/') expect(types, path).toContain('WebSite');
     if (path.includes('/cypel/')) {
       expect(types, path).toEqual(expect.arrayContaining(['RealEstateListing', 'SingleFamilyResidence', 'BreadcrumbList']));
+      const breadcrumb = graph.find((node) => node['@type'] === 'BreadcrumbList')!;
+      expect(breadcrumb.itemListElement, path).toHaveLength(3);
       const residence = graph.find((node) => node['@type'] === 'SingleFamilyResidence')!;
       expect(residence.floorSize, path).toEqual({ '@type': 'QuantitativeValue', value: 1150, unitCode: 'MTK' });
       expect(residence.address, path).toMatchObject({ addressCountry: path.startsWith('/en/') ? 'Spain' : 'Hiszpania' });

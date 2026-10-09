@@ -5,6 +5,16 @@ export const en: Dictionary = {
   ogLocale: 'en_GB',
   numberLocale: 'en-GB',
   meta: {
+    process: {
+      title: 'How we work: discreet acquisitions and quiet sales of residences | Enklawa Villas',
+      description:
+        'One curator from the first call to the handover of keys. Identity verification, a confidentiality agreement and 70% of deals closed off-market.',
+    },
+    residences: {
+      title: 'Off-market residences in Poland and Europe | Enklawa Villas',
+      description:
+        'A portfolio of residences above 800 m² on plots above 5,000 m², by the sea, in the mountains and among hills. Choose a country and setting, full property details after a call.',
+    },
     home: {
       title: 'Enklawa Villas: off-market residences and estates in Poland',
       description:
@@ -26,7 +36,7 @@ export const en: Dictionary = {
   header: {
     home: 'Enklawa Villas, home page',
     nav: 'Main navigation',
-    links: { standard: 'Standard', residences: 'Residences', contact: 'Contact' },
+    links: { standard: 'Standard', residences: 'Residences', process: 'How we work', contact: 'Contact' },
     language: 'Choose language',
     menu: 'Menu',
     close: 'Close',
@@ -93,6 +103,81 @@ export const en: Dictionary = {
     more: 'More from the portfolio',
     previous: 'Previous residences',
     next: 'Next residences',
+  },
+  process: {
+    title: 'How we work',
+    lead: 'One curator guides you from the first call to the handover of keys. You see property details after verification, so neither your data nor the residence enters public circulation.',
+    stepsTitle: 'Four stages of working together',
+    steps: [
+      {
+        title: 'A call with your curator',
+        text: 'You tell us what kind of estate you are looking for, or which residence you would like to entrust to us. From then on, the same curator is your only point of contact.',
+      },
+      {
+        title: 'Verification and confidentiality',
+        text: 'We verify your identity, as required by anti-money laundering law. We then sign a brokerage agreement or a confidentiality agreement.',
+      },
+      {
+        title: 'Details and viewings',
+        text: 'Your curator shares plans, documents and the exact location in person. In a quiet sale, only verified buyers ever learn about the property.',
+      },
+      {
+        title: 'Transaction and keys',
+        text: 'The same curator handles the legal audit and the transaction through to the handover of keys. Binding terms are set only by an agreement in the form required by law.',
+      },
+    ],
+    principlesTitle: 'Principles we never compromise on',
+    principles: [
+      {
+        title: 'No public listings',
+        text: '70% of our deals close off-market, as a Private Placement. In a quiet sale, the residence never appears in listings.',
+      },
+      {
+        title: 'Details after verification',
+        text: 'Plans, documents and the location are shared after identity verification and a signed agreement. This protects both the buyer and the owner.',
+      },
+      {
+        title: 'Insured agent',
+        text: 'We hold the mandatory professional liability insurance for real estate agents required by Article 181 of the Polish Real Estate Management Act.',
+      },
+    ],
+    faqTitle: 'Frequently asked questions',
+    faq: [
+      {
+        question: 'Which residences do you take on?',
+        answer: 'Properties above 800 m² on plots above 5,000 m² that offer complete seclusion from their surroundings. This is the Enklawa Standard and we make no exceptions.',
+      },
+      {
+        question: 'Why do you need to verify my identity?',
+        answer: 'Real estate agents are obliged institutions under Polish anti-money laundering law. Verification also protects owners, as details of their residences reach only vetted people.',
+      },
+      {
+        question: 'Can I sell my residence without a public listing?',
+        answer: 'Yes. As a Private Placement, we present the property only to verified buyers, with no portals and no public exposure.',
+      },
+      {
+        question: 'Where do you operate?',
+        answer: 'We represent residences in Poland and across Europe. Current locations are shown in the list of residences.',
+        link: true,
+      },
+      {
+        question: 'What happens after I send an enquiry?',
+        answer: 'Your curator gets in touch personally through the channel you choose in the form and arranges a call. Property details follow identity verification.',
+      },
+    ],
+  },
+  residences: {
+    title: 'Residences',
+    lead: 'Properties from our portfolio in Poland and across Europe. Plans, documents and the exact location are shared by a curator after a call and identity verification.',
+    filters: 'Residence filters',
+    country: 'Country',
+    setting: 'Setting',
+    all: 'All',
+    settings: { sea: 'By the sea', mountains: 'In the mountains', countryside: 'Among forests and hills' },
+    count: { one: 'residence', other: 'residences' },
+    closingTitle: 'Not seeing your residence?',
+    closingText: '70% of our deals close off-market. Tell us what you are looking for and a curator will show you properties we do not publish.',
+    viewAll: 'View all residences',
   },
   residence: {
     back: 'All residences',

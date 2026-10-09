@@ -25,12 +25,11 @@ test('film na podstronie gra i nie zapętla się', async ({ page }) => {
   await expect(film).toHaveJSProperty('loop', false);
 });
 
-test('link „Wszystkie rezydencje” wraca do portfolio bez intro', async ({ page }) => {
+test('link „Wszystkie rezydencje” prowadzi do listy rezydencji', async ({ page }) => {
   await page.goto('/rezydencje/klif/');
   await page.getByRole('link', { name: 'Wszystkie rezydencje' }).click();
-  await expect(page).toHaveURL('/#rezydencje');
-  await expect(page.locator('[data-intro]')).toHaveCount(0);
-  await expect.poll(() => page.locator('#rezydencje').evaluate((section) => Math.abs(section.getBoundingClientRect().top)), { timeout: 10_000 }).toBeLessThan(120);
+  await expect(page).toHaveURL('/rezydencje/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Rezydencje');
 });
 
 test('nawigacja „Następna rezydencja” przechodzi po kolei i zawija na koniec', async ({ page }) => {

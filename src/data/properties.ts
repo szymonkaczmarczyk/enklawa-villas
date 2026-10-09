@@ -1,4 +1,5 @@
 import type { ImageMetadata } from 'astro';
+import type { Lang } from '../i18n';
 import baltyk from '../assets/properties/baltyk.jpg';
 import cypel from '../assets/properties/cypel.jpg';
 import klif from '../assets/properties/klif.jpg';
@@ -12,6 +13,10 @@ type Localized = { pl: string; en: string };
 
 export type Placement = 'wide' | 'left' | 'right' | 'more';
 
+export const settings = ['sea', 'mountains', 'countryside'] as const;
+
+export type Setting = (typeof settings)[number];
+
 export type Property = {
   id: string;
   image: ImageMetadata;
@@ -20,6 +25,7 @@ export type Property = {
   focus: string;
   name: Localized;
   location: Localized;
+  setting: Setting;
   alt: Localized;
   transactionPrice: number | null;
 };
@@ -33,6 +39,7 @@ export const properties: Property[] = [
     focus: '50% 50%',
     name: { pl: 'Rezydencja na cyplu', en: 'Headland residence' },
     location: { pl: 'Minorka, Hiszpania', en: 'Menorca, Spain' },
+    setting: 'sea',
     alt: {
       pl: 'Jasna, kanciasta rezydencja na skalistym cyplu otoczonym morzem, z długim basenem i geometrycznymi ogrodami o zmierzchu',
       en: 'A pale, angular residence on a rocky headland surrounded by the sea, with a long pool and geometric gardens at dusk',
@@ -47,6 +54,7 @@ export const properties: Property[] = [
     focus: '50% 45%',
     name: { pl: 'Posiadłość wśród cyprysów', en: 'Cypress estate' },
     location: { pl: "Val d'Orcia, Włochy", en: "Val d'Orcia, Italy" },
+    setting: 'countryside',
     alt: {
       pl: 'Kamienna posiadłość na wzgórzu wśród alej cyprysów i gajów oliwnych w złotym świetle, z basenem i kolistym podjazdem',
       en: 'A stone estate on a hilltop among cypress avenues and olive groves in golden light, with a pool and a circular driveway',
@@ -61,6 +69,7 @@ export const properties: Property[] = [
     focus: '40% 50%',
     name: { pl: 'Sanktuarium pod Tatrami', en: 'Tatra sanctuary' },
     location: { pl: 'Podhale, Polska', en: 'Podhale, Poland' },
+    setting: 'mountains',
     alt: {
       pl: 'Górska rezydencja z drewna i kamienia z parującym basenem na tle ośnieżonych szczytów o zmierzchu',
       en: 'A mountain residence of timber and stone with a steaming pool against snowy peaks at dusk',
@@ -75,6 +84,7 @@ export const properties: Property[] = [
     focus: '50% 55%',
     name: { pl: 'Rezydencja w sosnach pinii', en: 'Stone pine residence' },
     location: { pl: 'Ramatuelle, Francja', en: 'Ramatuelle, France' },
+    setting: 'countryside',
     alt: {
       pl: 'Ciemna, przeszklona rezydencja wśród sosen pinii, z basenem i rozległym trawnikiem o zmierzchu',
       en: 'A dark, glazed residence among stone pines, with a pool and a wide lawn at dusk',
@@ -89,6 +99,7 @@ export const properties: Property[] = [
     focus: '35% 55%',
     name: { pl: 'Rezydencja na klifie', en: 'Clifftop residence' },
     location: { pl: 'Algarve, Portugalia', en: 'Algarve, Portugal' },
+    setting: 'sea',
     alt: {
       pl: 'Trzykondygnacyjna willa z jasnego kamienia i drewnianych lameli na skalistym klifie, z długim basenem bez krawędzi nad morzem o zachodzie słońca',
       en: 'A three-storey villa of pale stone and timber louvres on a rocky cliff, with a long infinity pool above the sea at sunset',
@@ -103,6 +114,7 @@ export const properties: Property[] = [
     focus: '40% 60%',
     name: { pl: 'Rezydencja nad Bałtykiem', en: 'Baltic coast residence' },
     location: { pl: 'Pomorze Zachodnie, Polska', en: 'West Pomerania, Poland' },
+    setting: 'sea',
     alt: {
       pl: 'Rezydencja z trawertynu i szkła na zalesionym klifie o zmierzchu, z basenem bez krawędzi, rozległym tarasem i paleniskiem otoczonym kanapami',
       en: 'A travertine and glass residence on a forested cliff at dusk, with an infinity pool, a wide terrace and a fire pit surrounded by sofas',
@@ -117,6 +129,7 @@ export const properties: Property[] = [
     focus: '50% 50%',
     name: { pl: 'Pawilon z trawertynu', en: 'Travertine pavilion' },
     location: { pl: 'Beskid Śląski, Polska', en: 'Silesian Beskids, Poland' },
+    setting: 'mountains',
     alt: {
       pl: 'Pawilon z trawertynu o zmierzchu, z basenem przed przeszkloną ścianą salonu, w otoczeniu lasu',
       en: 'A travertine pavilion at dusk, with a pool in front of the glazed living room wall, surrounded by forest',
@@ -131,6 +144,7 @@ export const properties: Property[] = [
     focus: '45% 50%',
     name: { pl: 'Dom wśród czerwonych skał', en: 'Red rock house' },
     location: { pl: 'Andaluzja, Hiszpania', en: 'Andalusia, Spain' },
+    setting: 'mountains',
     alt: {
       pl: 'Dom ze stali kortenowskiej wśród czerwonych skał, z basenem odbijającym różowe niebo i rozświetlonym wnętrzem',
       en: 'A weathering steel house among red rocks, with a pool reflecting the pink sky and a lit interior',
@@ -138,3 +152,15 @@ export const properties: Property[] = [
     transactionPrice: null,
   },
 ];
+
+const locationParts = (property: Property, lang: Lang) => {
+  const location = property.location[lang];
+  const separator = location.lastIndexOf(', ');
+  return { region: location.slice(0, separator), country: location.slice(separator + 2) };
+};
+
+export const regionOf = (property: Property, lang: Lang) => locationParts(property, lang).region;
+
+export const countryOf = (property: Property, lang: Lang) => locationParts(property, lang).country;
+
+export const countryKey = (property: Property) => countryOf(property, 'en').toLowerCase().replace(/\s+/g, '-');

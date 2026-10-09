@@ -3,6 +3,16 @@ export const pl = {
   ogLocale: 'pl_PL',
   numberLocale: 'pl-PL',
   meta: {
+    process: {
+      title: 'Jak pracujemy: dyskretny zakup i cicha sprzedaż rezydencji | Enklawa Villas',
+      description:
+        'Jeden kurator od pierwszej rozmowy po odbiór kluczy. Weryfikacja tożsamości, umowa o poufności i 70% transakcji poza rynkiem publicznym.',
+    },
+    residences: {
+      title: 'Rezydencje off-market w Polsce i Europie | Enklawa Villas',
+      description:
+        'Portfolio rezydencji powyżej 800 m² na działkach powyżej 5 000 m², nad morzem, w górach i wśród wzgórz. Wybierz kraj i krajobraz, szczegóły oferty po rozmowie.',
+    },
     home: {
       title: 'Enklawa Villas: rezydencje i posiadłości off-market w Polsce',
       description:
@@ -24,7 +34,7 @@ export const pl = {
   header: {
     home: 'Enklawa Villas, strona główna',
     nav: 'Nawigacja główna',
-    links: { standard: 'Standard', residences: 'Rezydencje', contact: 'Kontakt' },
+    links: { standard: 'Standard', residences: 'Rezydencje', process: 'Jak pracujemy', contact: 'Kontakt' },
     language: 'Wybór języka',
     menu: 'Menu',
     close: 'Zamknij',
@@ -92,6 +102,81 @@ export const pl = {
     more: 'Więcej z portfolio',
     previous: 'Poprzednie rezydencje',
     next: 'Następne rezydencje',
+  },
+  process: {
+    title: 'Jak pracujemy',
+    lead: 'Jeden kurator prowadzi Cię od pierwszej rozmowy do odbioru kluczy. Szczegóły obiektów poznajesz po weryfikacji, więc ani Twoje dane, ani rezydencja nie trafiają do publicznego obiegu.',
+    stepsTitle: 'Cztery etapy współpracy',
+    steps: [
+      {
+        title: 'Rozmowa z kuratorem',
+        text: 'Opowiadasz, jakiej posiadłości szukasz albo jaką rezydencję chcesz powierzyć. Od tej chwili ten sam kurator jest Twoim jedynym kontaktem.',
+      },
+      {
+        title: 'Weryfikacja i poufność',
+        text: 'Weryfikujemy tożsamość, bo wymaga tego ustawa o przeciwdziałaniu praniu pieniędzy. Zawieramy umowę pośrednictwa albo umowę o zachowaniu poufności.',
+      },
+      {
+        title: 'Szczegóły i wizyty',
+        text: 'Kurator osobiście przekazuje plany, dokumentację i dokładną lokalizację. Przy cichej sprzedaży obiekt poznają wyłącznie zweryfikowani kupujący.',
+      },
+      {
+        title: 'Transakcja i klucze',
+        text: 'Ten sam kurator prowadzi audyt prawny i transakcję aż do odbioru kluczy. Wiążące warunki określa wyłącznie umowa w formie wymaganej przez prawo.',
+      },
+    ],
+    principlesTitle: 'Zasady, od których nie odstępujemy',
+    principles: [
+      {
+        title: 'Bez publicznych ogłoszeń',
+        text: '70% transakcji prowadzimy poza rynkiem publicznym, w formule Private Placement. W cichej sprzedaży rezydencja nie pojawia się w ogłoszeniach.',
+      },
+      {
+        title: 'Szczegóły po weryfikacji',
+        text: 'Plany, dokumentację i lokalizację udostępniamy po weryfikacji tożsamości i zawarciu umowy. Chronimy w ten sposób i kupującego, i właściciela.',
+      },
+      {
+        title: 'Ubezpieczony pośrednik',
+        text: 'Mamy obowiązkowe ubezpieczenie odpowiedzialności cywilnej pośrednika, o którym mówi art. 181 ustawy o gospodarce nieruchomościami.',
+      },
+    ],
+    faqTitle: 'Najczęstsze pytania',
+    faq: [
+      {
+        question: 'Jakie rezydencje przyjmujecie do portfolio?',
+        answer: 'Obiekty powyżej 800 m² na działkach powyżej 5 000 m², które zapewniają pełną izolację od otoczenia. To Standard Enklawy i nie robimy od niego wyjątków.',
+      },
+      {
+        question: 'Dlaczego musicie zweryfikować moją tożsamość?',
+        answer: 'Pośrednik w obrocie nieruchomościami jest instytucją obowiązaną w rozumieniu ustawy o przeciwdziałaniu praniu pieniędzy. Weryfikacja chroni też właścicieli, bo szczegóły ich rezydencji trafiają tylko do sprawdzonych osób.',
+      },
+      {
+        question: 'Czy mogę sprzedać rezydencję bez publicznego ogłoszenia?',
+        answer: 'Tak. W formule Private Placement przedstawiamy obiekt wyłącznie zweryfikowanym kupującym, bez portali i bez publicznej ekspozycji.',
+      },
+      {
+        question: 'Gdzie działacie?',
+        answer: 'Reprezentujemy rezydencje w Polsce i w Europie. Aktualne lokalizacje pokazuje lista rezydencji.',
+        link: true,
+      },
+      {
+        question: 'Co dzieje się po wysłaniu zapytania?',
+        answer: 'Kurator odzywa się osobiście kanałem, który wskażesz w formularzu, i umawia rozmowę. Szczegóły ofert przekazuje po weryfikacji tożsamości.',
+      },
+    ],
+  },
+  residences: {
+    title: 'Rezydencje',
+    lead: 'Obiekty z naszego portfolio w Polsce i w Europie. Plany, dokumentację i dokładną lokalizację kurator przekazuje po rozmowie i weryfikacji tożsamości.',
+    filters: 'Filtry rezydencji',
+    country: 'Kraj',
+    setting: 'Krajobraz',
+    all: 'Wszystkie',
+    settings: { sea: 'Nad morzem', mountains: 'W górach', countryside: 'Wśród lasów i wzgórz' },
+    count: { one: 'rezydencja', few: 'rezydencje', many: 'rezydencji', other: 'rezydencji' } as Record<string, string>,
+    closingTitle: 'Nie widzisz swojej rezydencji?',
+    closingText: '70% transakcji prowadzimy poza rynkiem publicznym. Opowiedz, czego szukasz, a kurator pokaże obiekty, których nie publikujemy.',
+    viewAll: 'Zobacz wszystkie rezydencje',
   },
   residence: {
     back: 'Wszystkie rezydencje',

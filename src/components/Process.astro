@@ -1,0 +1,272 @@
+---
+import { dictionaries, routes, type Lang } from '../i18n';
+import Button from './Button.astro';
+import Icon, { type IconName } from './Icon.astro';
+import Paths from './Paths.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const p = t.process;
+const principleIcons: IconName[] = ['lock', 'identificationCard', 'shieldCheck'];
+const number = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<section class="process container" aria-labelledby="process-title">
+  <header class="process__header">
+    <h1 class="t-h1" id="process-title">{p.title}</h1>
+    <p class="t-lead muted">{p.lead}</p>
+    <Button variant="solid" data-dossier-open>{t.cta}</Button>
+  </header>
+
+  <section class="steps" aria-labelledby="steps-title">
+    <h2 class="visually-hidden" id="steps-title">{p.stepsTitle}</h2>
+    <ol class="steps__list" role="list">
+      {
+        p.steps.map((step, index) => (
+          <li class="step" data-reveal>
+            <span class="step__number" aria-hidden="true">
+              {number(index)}
+            </span>
+            <h3 class="step__title">
+              <span class="visually-hidden">{number(index)}. </span>
+              {step.title}
+            </h3>
+            <p class="step__text muted">{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="principles" aria-labelledby="principles-title">
+    <h2 class="t-h2" id="principles-title" data-reveal>{p.principlesTitle}</h2>
+    <ul class="principles__list" role="list">
+      {
+        p.principles.map((principle, index) => (
+          <li class="principle" data-reveal>
+            <Icon name={principleIcons[index]} size={32} class="principle__icon" />
+            <h3 class="principle__title">{principle.title}</h3>
+            <p class="muted">{principle.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="faq" aria-labelledby="faq-title">
+    <h2 class="t-h2" id="faq-title" data-reveal>{p.faqTitle}</h2>
+    <div class="faq__list" data-reveal>
+      {
+        p.faq.map((item) => (
+          <details class="faq__item">
+            <summary class="faq__question">
+              <h3 class="faq__title">{item.question}</h3>
+              <Icon name="plus" size={24} class="faq__icon" />
+            </summary>
+            <div class="faq__answer muted">
+              <p>{item.answer}</p>
+              {'link' in item && (
+                <a class="faq__link link" href={routes.residences[lang]}>
+                  {t.residences.viewAll}
+                </a>
+              )}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+</section>
+
+<Paths lang={lang} />
+
+<style>
+  .process {
+    padding-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + var(--space-9));
+  }
+
+  .process__header {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    margin-bottom: var(--space-10);
+  }
+
+  .steps__list {
+    display: grid;
+  }
+
+  .step {
+    display: grid;
+    gap: var(--space-3) var(--space-5);
+    padding-block: var(--space-6) var(--space-7);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .step:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .step__number {
+    color: var(--color-accent);
+    font-size: var(--fs-h4);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  .step__title {
+    font-size: var(--fs-h3);
+  }
+
+  .step__text {
+    max-width: 52ch;
+    font-size: var(--fs-body-lg);
+    line-height: 1.6;
+  }
+
+  .principles,
+  .faq {
+    display: grid;
+    gap: var(--space-8);
+    margin-top: var(--space-10);
+  }
+
+  .principles__list {
+    display: grid;
+    gap: var(--space-7) var(--space-6);
+  }
+
+  .principle {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+  }
+
+  .principle :global(.principle__icon) {
+    margin-bottom: var(--space-2);
+    color: var(--color-accent);
+  }
+
+  .principle__title {
+    font-size: var(--fs-h4);
+    letter-spacing: var(--tracking-body);
+    line-height: 1.3;
+  }
+
+  .principle p {
+    max-width: 44ch;
+  }
+
+  .faq {
+    padding-bottom: var(--space-10);
+  }
+
+  .faq__list {
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .faq__item {
+    border-top: 1px solid var(--color-line);
+    interpolate-size: allow-keywords;
+  }
+
+  .faq__item::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size var(--duration) var(--ease-out),
+      content-visibility var(--duration) allow-discrete;
+  }
+
+  .faq__item[open]::details-content {
+    block-size: auto;
+  }
+
+  .faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    min-height: var(--tap);
+    padding-block: var(--space-5);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__question:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+  }
+
+  .faq__title {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body);
+    line-height: 1.35;
+  }
+
+  .faq__question :global(.faq__icon) {
+    flex: none;
+    color: var(--color-text-muted);
+    transition:
+      rotate var(--duration) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  .faq__item[open] :global(.faq__icon) {
+    rotate: 45deg;
+    color: var(--color-text);
+  }
+
+  .faq__answer {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
+    max-width: 60ch;
+    padding-bottom: var(--space-6);
+    line-height: 1.65;
+  }
+
+  .faq__link {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .faq__question:hover :global(.faq__icon) {
+      color: var(--color-text);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq__item::details-content,
+    .faq__question :global(.faq__icon) {
+      transition: none;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .step {
+      grid-template-columns: 2fr 5fr 5fr;
+      align-items: baseline;
+    }
+
+    .principles__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .step {
+      grid-template-columns: 2fr 4fr 6fr;
+    }
+  }
+</style>
