@@ -3,6 +3,7 @@ import { getImage } from 'astro:assets';
 import Residence from '../../components/Residence.astro';
 import { properties } from '../../data/properties';
 import { residences } from '../../data/residences';
+import { residenceSchema } from '../../data/schema';
 import { dictionaries, residencePaths } from '../../i18n';
 import Base from '../../layouts/Base.astro';
 
@@ -29,6 +30,7 @@ const og = await getImage({ src: property.image, width: 1200, height: 630, fit: 
   image={{ src: og.src, alt: property.alt[lang] }}
   title={`${name}, ${location}: ${t.residence.metaSuffix}`}
   description={`${name}, ${location}. ${residence.description[lang][0]}`}
+  schema={residenceSchema(lang, property, residence, og.src)}
 >
   <Residence lang={lang} property={property} residence={residence} next={next} />
 </Base>

@@ -13,12 +13,16 @@ blob-report/
 *.tsbuildinfo
 .vscode/
 .idea/
+*.swp
+*~
+coverage/
+.eslintcache
 
 .env
 .env.*
 !.env.example
 .envrc
-.dev.vars
+.dev.vars*
 *.pem
 *.key
 *.p8
@@ -44,6 +48,7 @@ storageState.json
 .supabase/
 
 .DS_Store
+._*
 Thumbs.db
 * 2.*
 * 2/
@@ -71,6 +76,10 @@ design-system/
 .cursor/
 .codex/
 .windsurf/
+.windsurfrules
+.cursorrules
+.clinerules
+.roo/
 .gemini/
 .junie/
 .kiro/

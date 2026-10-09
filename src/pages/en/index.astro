@@ -1,11 +1,12 @@
 ---
 import Home from '../../components/Home.astro';
+import { websiteSchema } from '../../data/schema';
 import { dictionaries } from '../../i18n';
 import Base from '../../layouts/Base.astro';
 
 const { meta } = dictionaries.en;
 ---
 
-<Base lang="en" route="home" title={meta.home.title} description={meta.home.description} intro>
+<Base lang="en" route="home" title={meta.home.title} description={meta.home.description} schema={[websiteSchema('en')]} intro>
   <Home lang="en" />
 </Base>

@@ -67,3 +67,22 @@ test('każda strona ma favicon, ikonę iPhone i manifest, a pliki istnieją', as
     expect((await request.get(file)).status(), file).toBe(200);
   }
 });
+
+test('dane strukturalne są poprawne i bez pól do uzupełnienia', async ({ page }) => {
+  for (const path of pages) {
+    await page.goto(path);
+    const scripts = await page.locator('script[type="application/ld+json"]').allTextContents();
+    expect(scripts, path).toHaveLength(1);
+    expect(scripts[0], path).not.toMatch(/\[\[|000 00 00/);
+    const graph: Record<string, unknown>[] = JSON.parse(scripts[0])['@graph'];
+    const types = graph.map((node) => node['@type']);
+    expect(types, path).toContain('RealEstateAgent');
+    if (path === '/' || path === '/en/') expect(types, path).toContain('WebSite');
+    if (path.includes('/cypel/')) {
+      expect(types, path).toEqual(expect.arrayContaining(['RealEstateListing', 'SingleFamilyResidence', 'BreadcrumbList']));
+      const residence = graph.find((node) => node['@type'] === 'SingleFamilyResidence')!;
+      expect(residence.floorSize, path).toEqual({ '@type': 'QuantitativeValue', value: 1150, unitCode: 'MTK' });
+      expect(residence.address, path).toMatchObject({ addressCountry: path.startsWith('/en/') ? 'Spain' : 'Hiszpania' });
+    }
+  }
+});

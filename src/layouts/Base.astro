@@ -6,6 +6,7 @@ import fontLatin from '@fontsource-variable/dm-sans/files/dm-sans-latin-opsz-nor
 import DossierDialog from '../components/DossierDialog.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import { agentSchema, type SchemaNode } from '../data/schema';
 import { dictionaries, routes, type Lang, type LocalizedPaths, type RouteKey } from '../i18n';
 
 interface Props {
@@ -17,9 +18,10 @@ interface Props {
   description: string;
   noindex?: boolean;
   intro?: boolean;
+  schema?: SchemaNode[];
 }
 
-const { lang, route, paths, image, title, description, noindex = false, intro = false } = Astro.props;
+const { lang, route, paths, image, title, description, noindex = false, intro = false, schema = [] } = Astro.props;
 const t = dictionaries[lang];
 const absolute = (path: string) => new URL(path, Astro.site).href;
 const localized: LocalizedPaths | null = paths ?? (route ? routes[route] : null);
@@ -27,6 +29,7 @@ const canonical = localized ? absolute(localized[lang]) : null;
 const alternates = localized ? (Object.entries(localized) as [Lang, string][]) : [];
 const ogImage = image ?? { src: `/og/${lang}.jpg`, alt: t.hero.title };
 const ogLocaleAlternate = lang === 'pl' ? dictionaries.en.ogLocale : dictionaries.pl.ogLocale;
+const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@graph': [agentSchema(lang), ...schema] }).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -61,6 +64,7 @@ const ogLocaleAlternate = lang === 'pl' ? dictionaries.en.ogLocale : dictionarie
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
+    <script type="application/ld+json" set:html={structuredData} />
 
     <script is:inline define:vars={{ intro }}>
       const root = document.documentElement;
