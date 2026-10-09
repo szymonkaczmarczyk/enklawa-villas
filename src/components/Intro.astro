@@ -1,11 +1,8 @@
 ---
 import Logo from './Logo.astro';
-
-const lines = [1, 2, 4, 5];
 ---
 
 <div class="intro" aria-hidden="true" data-intro>
-  {lines.map((line) => <span class="intro__line" style={`--line: ${line}`} data-intro-line />)}
   <div class="intro__brand" data-intro-brand>
     <Logo variant="stacked" />
   </div>
@@ -23,16 +20,6 @@ const lines = [1, 2, 4, 5];
     display: grid;
     place-items: center;
     background: var(--color-bg);
-  }
-
-  .intro__line {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: calc(var(--line) * 100% / 6);
-    width: 1px;
-    background: var(--color-line);
-    transform-origin: top;
   }
 
   .intro__brand :global(.logo) {

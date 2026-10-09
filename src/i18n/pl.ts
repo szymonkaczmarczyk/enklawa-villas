@@ -39,8 +39,10 @@ export const pl = {
   },
   scrolly: {
     label: 'Wejście do rezydencji',
-    title: 'Twoja prywatna enklawa.',
-    text: 'Największe rezydencje i posiadłości off-market w Polsce.',
+    beats: [
+      { title: 'Twoja prywatna enklawa.', text: 'Największe rezydencje i posiadłości off-market w Polsce.' },
+      { title: 'Spokój zaczyna się od progu.', text: 'Las, dystans i atrium chronią dom przed wzrokiem z zewnątrz.' },
+    ],
     posterAlt: 'Kamienna ścieżka przez mglisty sosnowy las prowadząca do domu z opalanego drewna.',
   },
   standard: {
@@ -98,7 +100,6 @@ export const pl = {
     area: 'Powierzchnia',
     plot: 'Działka',
     price: 'Cena',
-    missing: '[[do uzupełnienia]]',
     gallery: 'Galeria',
     closingTitle: 'Szczegóły oferty po rozmowie',
     closingText: 'Plany, dokumentację i dokładną lokalizację kurator przekazuje osobiście, po weryfikacji tożsamości.',
@@ -170,7 +171,6 @@ export const pl = {
     contactTitle: 'Kontakt bezpośredni',
     concierge: 'Infolinia konsjerża 24/7',
     companyTitle: 'Dane rejestrowe',
-    companyIntro: 'Obsługę prawną i operacyjną transakcji realizuje:',
     capital: 'Kapitał zakładowy',
     legalTitle: 'Informacje',
     privacy: 'Polityka prywatności',

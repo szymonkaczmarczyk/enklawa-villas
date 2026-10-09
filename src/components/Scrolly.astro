@@ -21,14 +21,18 @@ const firstFrame = (set: 'landscape' | 'portrait') => `${frames.path}/${set}/000
     <canvas class="scrolly__canvas" aria-hidden="true" data-canvas></canvas>
     <div class="scrolly__shade" aria-hidden="true"></div>
 
-    <div class="beat" data-beat>
-      <div class="beat__inner container">
-        <div class="beat__block">
-          <h2 class="t-h2">{t.scrolly.title}</h2>
-          <p class="t-lead">{t.scrolly.text}</p>
+    {
+      t.scrolly.beats.map((beat, index) => (
+        <div class="beat" data-side={index % 2 === 0 ? 'end' : 'start'} data-beat>
+          <div class="beat__inner container">
+            <div class="beat__block">
+              <h2 class="t-h2">{beat.title}</h2>
+              <p class="t-lead">{beat.text}</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      ))
+    }
   </div>
 
   <div class="scrolly__track" aria-hidden="true" data-track></div>
@@ -88,7 +92,19 @@ const firstFrame = (set: 'landscape' | 'portrait') => `${frames.path}/${set}/000
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(ellipse 70% 80% at 78% 55%, rgb(18 19 22 / 0.84) 0, rgb(18 19 22 / 0.4) 45%, rgb(18 19 22 / 0) 72%);
+    background: radial-gradient(ellipse 70% 80% at var(--beat-x) 55%, rgb(18 19 22 / 0.84) 0, rgb(18 19 22 / 0.4) 45%, rgb(18 19 22 / 0) 72%);
+  }
+
+  .beat[data-side='end'] {
+    --beat-x: 78%;
+  }
+
+  .beat[data-side='start'] {
+    --beat-x: 22%;
+  }
+
+  .beat[data-side='start'] .beat__inner {
+    align-items: flex-start;
   }
 
   .beat__inner {
@@ -143,7 +159,8 @@ const firstFrame = (set: 'landscape' | 'portrait') => `${frames.path}/${set}/000
       background: linear-gradient(to top, rgb(18 19 22 / 0.86) 0, rgb(18 19 22 / 0.4) 42%, rgb(18 19 22 / 0) 70%);
     }
 
-    .beat__inner {
+    .beat__inner,
+    .beat[data-side='start'] .beat__inner {
       justify-content: flex-end;
       align-items: flex-start;
       padding-bottom: max(var(--space-9), calc(env(safe-area-inset-bottom, 0px) + var(--space-7)));

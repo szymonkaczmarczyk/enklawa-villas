@@ -25,6 +25,7 @@ const sizes: Record<Placement, string> = {
 ---
 
 <article class="card" data-placement={property.placement} aria-labelledby={`card-${property.id}`} data-card data-button-scope>
+  <a class="card__overlay" href={residencePaths(property.id)[lang]} aria-labelledby={`card-${property.id}`}></a>
   <div class="card__media" data-card-media>
     <Picture
       src={property.image}
@@ -49,12 +50,9 @@ const sizes: Record<Placement, string> = {
       data-card-video
     ></video>
   </div>
-  <a class="card__overlay" href={residencePaths(property.id)[lang]} tabindex="-1" aria-hidden="true"></a>
   <div class="card__body" data-card-body>
     <div class="card__heading">
-      <Heading class="card__name" id={`card-${property.id}`}>
-        <a class="card__link" href={residencePaths(property.id)[lang]}>{name}</a>
-      </Heading>
+      <Heading class="card__name" id={`card-${property.id}`}>{name}</Heading>
       <p class="card__location">
         <Icon name="mapPin" size={16} />
         {location}
@@ -96,6 +94,7 @@ const sizes: Record<Placement, string> = {
   .card__media {
     position: relative;
     overflow: hidden;
+    pointer-events: none;
     aspect-ratio: 4 / 3;
     background: var(--color-surface);
   }
@@ -179,11 +178,11 @@ const sizes: Record<Placement, string> = {
     inset: 0;
   }
 
-  .card__link:focus-visible {
+  .card__overlay:focus-visible {
     outline: none;
   }
 
-  .card:has(.card__link:focus-visible) {
+  .card:has(.card__overlay:focus-visible) {
     outline: 2px solid var(--color-focus);
     outline-offset: 4px;
   }

@@ -150,7 +150,7 @@ przeglądarka ◄─────────────────────
     <tr><td>Krój</td><td>DM Sans Variable (Fontsource)</td><td>Hostowany lokalnie, oś <code>opsz</code>, polskie znaki</td></tr>
     <tr><td>Ikony</td><td>Phosphor <code>light</code></td><td>Wstawiane inline przez <code>Icon.astro</code></td></tr>
     <tr><td>Media</td><td><code>ffmpeg-static</code>, <code>sharp</code>, <code>opentype.js</code></td><td>Tylko w skryptach deweloperskich</td></tr>
-    <tr><td>Testy</td><td>Playwright 1.63</td><td>30 testów na Chromium, desktop i Pixel 7</td></tr>
+    <tr><td>Testy</td><td>Playwright 1.63</td><td>32 testy na Chromium, desktop i Pixel 7</td></tr>
   </table>
   <p class="note">Strona nie zapisuje cookies ani danych w <code>localStorage</code> i <code>sessionStorage</code> i nie ładuje zasobów z zewnątrz.
   Dlatego nie ma banera zgody. Pilnuje tego test „strona nic nie zapisuje w przeglądarce”.</p>
@@ -203,7 +203,7 @@ przeglądarka ◄─────────────────────
     <tr><td><code>data-intro-mode="play"</code></td><td>Intro ma zagrać. Nie używać nazwy <code>data-intro</code>: to selektor planszy i skrypt usunąłby cały dokument</td></tr>
   </table>
   <h4>Karty portfolio</h4>
-  <p>Kliknięcie w kartę prowadzi na podstronę rezydencji (warstwa <code>a.card__overlay</code>). Przycisk
+  <p>Kliknięcie w kartę prowadzi na podstronę rezydencji (warstwa <code>a.card__overlay</code>, jedyny link karty, nazwany przez <code>aria-labelledby</code> nagłówkiem). Przycisk
   „Zapytaj o obiekt” leży nad nią i otwiera okno zapytania z kontekstem obiektu. Podgląd wideo gra po najechaniu
   (kursor) albo raz, gdy karta jest w 60% w kadrze (dotyk). Slider „Więcej z portfolio” przewija się strzałkami,
   gestem i przeciąganiem myszą (próg 6 px, kliknięcie po przeciągnięciu jest ignorowane).</p>
@@ -318,12 +318,12 @@ Sitemap: https://enklawavillas.com/sitemap.xml</pre>
   <table>
     <tr><th>Klucz</th><th>Typ</th><th>Opis</th></tr>
     <tr><td><code>film</code></td><td><code>string</code></td><td>Pełny film do hero podstrony (<code>/video/residence-&lt;id&gt;.mp4</code>)</td></tr>
-    <tr><td><code>area</code></td><td><code>number | null</code></td><td>Powierzchnia w m². <code>null</code> pokazuje „[[do uzupełnienia]]”</td></tr>
-    <tr><td><code>plot</code></td><td><code>number | null</code></td><td>Działka w m². Jak wyżej</td></tr>
+    <tr><td><code>area</code></td><td><code>number</code></td><td>Powierzchnia w m² (szacunkowa, z obiektu <code>sizes</code>)</td></tr>
+    <tr><td><code>plot</code></td><td><code>number</code></td><td>Działka w m² (szacunkowa)</td></tr>
     <tr><td><code>description</code></td><td><code>{ pl: string[], en: string[] }</code></td><td>Akapity opisu, pierwszy jest leadem i opisem meta. W PL jednoliterowe słowa dostają twardą spację</td></tr>
     <tr><td><code>gallery</code></td><td><code>{ image, alt: { pl, en } }[]</code></td><td>Trzy kadry z tekstem alternatywnym</td></tr>
   </table>
-  <p class="note">Opisy mówią tylko o tym, co widać na nagraniach. Metraży, liczby sypialni ani cen nie dopisujemy bez danych od właściciela.</p>
+  <p class="note">Opisy mówią tylko o tym, co widać na nagraniach. Powierzchnie i działki są szacunkowe, dobrane do skali domów na nagraniach. Liczby sypialni ani cen nie dopisujemy bez danych od właściciela.</p>
 </section>
 
 <section id="site" class="page">
@@ -332,7 +332,7 @@ Sitemap: https://enklawavillas.com/sitemap.xml</pre>
   <table>
     <tr><th>Klucz</th><th>Opis</th></tr>
     <tr><td><code>email</code></td><td>Adres, na który idą zapytania (<code>office@enklawavillas.com</code>)</td></tr>
-    <tr><td><code>phone</code></td><td>Infolinia konsjerża. Dopóki zawiera <code>[[</code>, nie jest linkiem <code>tel:</code></td></tr>
+    <tr><td><code>phone</code>, <code>phoneConfirmed</code></td><td>Infolinia konsjerża. Link <code>tel:</code> pojawia się dopiero przy <code>phoneConfirmed: true</code></td></tr>
     <tr><td><code>company.*</code></td><td>Adres, KRS, NIP, REGON, kapitał, polisa OC, hosting, poczta, retencja logów. Używane w stopce i dokumentach prawnych</td></tr>
     <tr><td><code>legalUpdated</code></td><td>Data aktualizacji dokumentów prawnych</td></tr>
   </table>
@@ -417,8 +417,9 @@ Wysłano ze strony enklawavillas.com</pre>
 &lt;Button icon="arrowRight" aria-label={t.portfolio.next} data-slider-next /&gt;</pre>
   <p>Przycisk bez treści jest kwadratem (strzałki slidera) i wymaga <code>aria-label</code>. Element z atrybutem
   <code>data-button-scope</code> (karta) włącza stan najechania przycisku w środku.</p>
-  <p class="note">Bez <code>transform: scale</code> na elementach z ramką: przy ułamkowych pikselach znikała górna krawędź.
-  Wciśnięcie wypełnia przycisk zamiast go zmniejszać.</p>
+  <p class="note">Wewnątrz przycisków i kafelków z ramką nie ma animacji <code>transform</code>. Przy ułamkowych pozycjach przeglądarka
+  przenosiła fragment na osobną warstwę i obcinała górną albo dolną krawędź. Wypełnienie animuje <code>height</code>, strzałka <code>left</code>,
+  a wciśnięcie wypełnia przycisk zamiast go zmniejszać.</p>
 </section>
 
 <section id="motion" class="page">
@@ -426,7 +427,7 @@ Wysłano ze strony enklawavillas.com</pre>
   <h4>Intro (src/scripts/intro.ts)</h4>
   <table>
     <tr><th>Krok</th><th>Czas</th></tr>
-    <tr><td>Linie siatki i znak</td><td>ok. 1,5 s</td></tr>
+    <tr><td>Znak wyostrza się z rozmycia</td><td>ok. 1,5 s</td></tr>
     <tr><td>Czekanie na <code>canplay</code> filmu hero</td><td>najwyżej 2,8 s</td></tr>
     <tr><td>Start filmu, plansza znika, logo powiększa się i rozmywa</td><td>ok. 1,1 s</td></tr>
     <tr><td>Nagłówek wchodzi z rozmycia</td><td>3,2 s po starcie filmu (0,5 s po pominięciu)</td></tr>
@@ -439,7 +440,7 @@ Wysłano ze strony enklawavillas.com</pre>
     <tr><td>Tor</td><td>480svh</td><td>200svh przy ograniczonym ruchu</td></tr>
     <tr><td><code>scrub</code></td><td>0,5</td><td>Wygładzenie pozycji względem scrolla</td></tr>
     <tr><td><code>decodeSpan</code></td><td>40 przed, 12 za</td><td>Okno zdekodowanych <code>ImageBitmap</code>, odwrócone przy przewijaniu w górę</td></tr>
-    <tr><td><code>narrative</code></td><td>wejście 12%, wyjście 52%, przejście 10%</td><td>Oś sceny tekstu w ułamkach toru</td></tr>
+    <tr><td><code>narrative</code></td><td>scena 1: 6% do 32%, scena 2: 42% do 70%, przejście 8%</td><td>Dwie sceny tekstu po przeciwnych stronach, po ok. 78% toru tekstu już nie ma</td></tr>
     <tr><td>Wersja lekka</td><td>co druga klatka</td><td>Ekrany do 767 px szerokości lub 480 px wysokości, <code>saveData</code>, łącze 2G/3G</td></tr>
   </table>
   <h4>Zestawy klatek</h4>
@@ -479,15 +480,15 @@ Wysłano ze strony enklawavillas.com</pre>
 <section id="tests" class="page">
   <h2>Testy e2e</h2>
 <pre>npm run test:e2e</pre>
-  <p>Playwright buduje stronę, uruchamia <code>astro preview --ignore-lock</code> na porcie 4332 i przechodzi 30 testów.
+  <p>Playwright buduje stronę, uruchamia <code>astro preview --ignore-lock</code> na porcie 4332 i przechodzi 32 testy.
   Flaga <code>--ignore-lock</code> jest potrzebna, bo Astro 7 po wykryciu agenta AI odpala podgląd w tle i Playwright uznaje, że serwer padł.</p>
   <table>
     <tr><th>Plik</th><th>Co sprawdza</th></tr>
-    <tr><td><code>home.spec.ts</code></td><td>Intro gra raz, pomijanie przy przejściu z podstrony, klatki na canvas, połowa klatek na telefonie, ograniczony ruch, brak zapisu w przeglądarce, brak poziomego scrolla na telefonie</td></tr>
+    <tr><td><code>home.spec.ts</code></td><td>Intro gra raz, pomijanie przy przejściu z podstrony, klatki na canvas, dwie sceny scrollytellingu, połowa klatek na telefonie, ograniczony ruch, brak zapisu w przeglądarce, brak poziomego scrolla na telefonie</td></tr>
     <tr><td><code>portfolio.spec.ts</code></td><td>Przycisk karty otwiera okno z kontekstem, karta prowadzi na podstronę, slider (strzałki i przeciąganie bez nawigacji)</td></tr>
     <tr><td><code>dossier.spec.ts</code></td><td>Pełna ścieżka formularza z walidacją, zamykanie klawiszem Esc</td></tr>
     <tr><td><code>residences.spec.ts</code></td><td>Osiem podstron (treść, galeria, alt, canonical, przełącznik języka), film bez pętli, powrót do portfolio bez intro, „Następna rezydencja”, wersja EN, telefon</td></tr>
-    <tr><td><code>seo.spec.ts</code></td><td>Unikalne tytuły i opisy, sitemap (22 adresy), robots, 404, brak słowa „dossier”</td></tr>
+    <tr><td><code>seo.spec.ts</code></td><td>Unikalne tytuły i opisy, sitemap (22 adresy), robots, 404, brak słowa „dossier”, dostępne nazwy linków i nagłówków</td></tr>
   </table>
   <p>Projekty: <code>desktop</code> (Chromium 1440×900) i <code>mobile</code> (Pixel 7, tylko testy z tagiem <code>@mobile</code>).
   Zestaw przeszedł trzykrotne powtórzenie (90/90).</p>
@@ -507,8 +508,8 @@ Wysłano ze strony enklawavillas.com</pre>
   <h4>Do uzupełnienia przed publikacją</h4>
   <table>
     <tr><th>Miejsce</th><th>Brak</th></tr>
-    <tr><td><code>src/data/site.ts</code></td><td>Telefon, adres, KRS, NIP, REGON, polisa OC pośrednika, hosting, poczta, retencja logów</td></tr>
-    <tr><td><code>src/data/residences.ts</code></td><td>Powierzchnia i działka każdej rezydencji</td></tr>
+    <tr><td><code>src/data/site.ts</code></td><td>Telefon, KRS, NIP, REGON i kod pocztowy (teraz zera, potem <code>phoneConfirmed: true</code>), adres, polisa OC pośrednika, hosting, poczta, retencja logów</td></tr>
+    <tr><td><code>src/data/residences.ts</code></td><td>Prawdziwa powierzchnia i działka (obecne są szacunkowe)</td></tr>
     <tr><td>Formularz</td><td>Endpoint serwerowy zamiast <code>mailto:</code></td></tr>
     <tr><td>Rezydencje</td><td>Nazwy, lokalizacje i nagrania są przykładowe (generowane). Regulamin nazywa je poglądowymi</td></tr>
   </table>

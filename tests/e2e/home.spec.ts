@@ -63,3 +63,24 @@ test('strona nic nie zapisuje w przeglądarce', async ({ page }) => {
   const stored = await page.evaluate(() => [localStorage.length, sessionStorage.length, document.cookie]);
   expect(stored).toEqual([0, 0, '']);
 });
+
+test('scrollytelling pokazuje dwie sceny po przeciwnych stronach, druga znika przed 80% toru', async ({ page }) => {
+  await openHomeWithoutIntro(page);
+  const beats = page.locator('[data-beat]');
+  await expect(beats).toHaveCount(2);
+  await expect(beats.nth(0)).toHaveAttribute('data-side', 'end');
+  await expect(beats.nth(1)).toHaveAttribute('data-side', 'start');
+  const track = await page.locator('[data-track]').evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return { top: box.top + window.scrollY, height: box.height };
+  });
+  const viewport = page.viewportSize()!.height;
+  const opacities = async (fraction: number) => {
+    await page.evaluate((y) => window.scrollTo(0, y), track.top - viewport + track.height * fraction);
+    await page.waitForTimeout(1500);
+    return beats.evaluateAll((elements) => elements.map((element) => Math.round(Number(getComputedStyle(element).opacity))));
+  };
+  expect(await opacities(0.2)).toEqual([1, 0]);
+  expect(await opacities(0.56)).toEqual([0, 1]);
+  expect(await opacities(0.82)).toEqual([0, 0]);
+});

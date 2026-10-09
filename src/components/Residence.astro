@@ -19,8 +19,7 @@ const r = t.residence;
 const name = property.name[lang];
 const location = property.location[lang];
 const context = `${name}, ${location}`;
-const squareMetres = (value: number | null) =>
-  value === null ? r.missing : `${new Intl.NumberFormat(t.numberLocale).format(value)} m²`;
+const squareMetres = (value: number) => `${new Intl.NumberFormat(t.numberLocale).format(value)}\u00a0m²`;
 const facts = [
   { label: r.location, value: location },
   { label: r.area, value: squareMetres(residence.area) },
@@ -404,7 +403,10 @@ const [wide, left, right] = residence.gallery;
   }
 
   .next :global(.next__arrow) {
+    position: relative;
+    left: 0;
     justify-self: end;
+    transition: left var(--duration) var(--ease-out);
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -413,7 +415,7 @@ const [wide, left, right] = residence.gallery;
     }
 
     .next:hover :global(.next__arrow) {
-      animation: travel 620ms var(--ease-out);
+      left: 8px;
     }
   }
 

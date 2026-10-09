@@ -9,6 +9,7 @@ for (const id of ids) {
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.locator('.residence__gallery img')).toHaveCount(3);
+    await expect(page.locator('.residence__fact dd')).toContainText([/\S/, /\d.*m²/, /\d.*m²/, /\S/]);
     for (const image of await page.locator('main img').all()) {
       expect(await image.getAttribute('alt')).not.toBeNull();
     }

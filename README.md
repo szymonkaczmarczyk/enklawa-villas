@@ -118,7 +118,7 @@ Strona działa pod `http://localhost:4321` (albo pod portem z `--port`).
 | `npm run build` | Build do `dist/` |
 | `npm run preview` | Podgląd builda |
 | `npm run check` | Sprawdzenie typów (`astro check`) |
-| `npm run test:e2e` | Build, podgląd na porcie 4332 i 30 testów Playwright |
+| `npm run test:e2e` | Build, podgląd na porcie 4332 i 33 testy Playwright |
 | `npm run hero` | Film hero i plakaty z `videos/intro1.mp4` |
 | `npm run frames` | 192 klatki scrollytellingu z `videos/intro2.mp4` |
 | `npm run previews` | 5-sekundowe podglądy i zdjęcia kart |
@@ -179,7 +179,8 @@ docs/
 
 ## Przed publikacją
 
-- Uzupełnij pola `[[...]]` w `src/data/site.ts` oraz powierzchnię i działkę w `src/data/residences.ts`.
+- Uzupełnij pola `[[...]]` i zera (telefon, KRS, NIP, REGON) w `src/data/site.ts`, a potem ustaw `phoneConfirmed: true`.
+- Powierzchnie i działki w `src/data/residences.ts` są szacunkowe, dobrane do nagrań. Podmień je na prawdziwe.
 - Zdecyduj o wysyłce formularza: endpoint serwerowy z limitem zgłoszeń i Turnstile zamiast `mailto:`.
 - Nagrania rezydencji są wygenerowane i poglądowe. Regulamin tak je opisuje.
 

@@ -49,9 +49,12 @@ const { company } = site;
 
     <section class="footer__block" aria-labelledby="footer-company">
       <h2 class="footer__title t-caps" id="footer-company">{t.footer.companyTitle}</h2>
-      <p class="footer__text">{t.footer.companyIntro}</p>
       <p class="footer__company" translate="no">{company.name}</p>
-      <p class="footer__text">KRS: {company.krs} | NIP: {company.nip} | REGON: {company.regon}</p>
+      <p class="footer__text footer__ids">
+        <span>KRS: {company.krs}</span>
+        <span>NIP: {company.nip}</span>
+        <span>REGON: {company.regon}</span>
+      </p>
       <p class="footer__text">{t.footer.capital}: {company.capital[lang]}</p>
     </section>
 
@@ -132,6 +135,15 @@ const { company } = site;
     font-size: var(--fs-small);
   }
 
+  .footer__ids {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .footer__ids span {
+    white-space: nowrap;
+  }
+
   .footer__link {
     display: inline-flex;
     align-items: center;
@@ -140,6 +152,7 @@ const { company } = site;
 
   .footer__bottom {
     margin-top: var(--space-9);
+    text-align: center;
     padding-top: var(--space-5);
     border-top: 1px solid var(--color-line);
     color: var(--color-text-subtle);
@@ -156,6 +169,10 @@ const { company } = site;
     .footer__grid {
       grid-template-columns: 3fr 3fr 4fr 2fr;
       gap: var(--space-6);
+    }
+
+    .footer__logo {
+      align-self: center;
     }
   }
 </style>

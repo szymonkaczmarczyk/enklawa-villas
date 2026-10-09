@@ -7,15 +7,44 @@ npm-debug.log*
 test-results/
 playwright-report/
 .playwright-mcp/
+blob-report/
+.cache/
+*.log
+*.tsbuildinfo
+.vscode/
+.idea/
 
 .env
 .env.*
 !.env.example
+.envrc
+.dev.vars
 *.pem
 *.key
+*.p8
 *.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+.npmrc
+.netrc
+credentials.json
+service-account*.json
+secrets.*
+*.secret
+playwright/.auth/
+storageState.json
+*.sqlite
+*.sqlite3
+*.db
+.wrangler/
+.firebase/
+.supabase/
 
 .DS_Store
+Thumbs.db
 * 2.*
 * 2/
 * 3.*
@@ -27,15 +56,27 @@ logo/
 favicon/
 
 CLAUDE.md
+CLAUDE.local.md
+claude.md
 AGENTS.md
+agents.md
+AGENT.md
+agent.md
 GEMINI.md
 MASTER.md
+master.md
 **/MASTER.md
 design-system/
 .claude/
 .cursor/
 .codex/
 .windsurf/
+.gemini/
+.junie/
+.kiro/
+.continue/
+.aider*
 .github/copilot-instructions.md
+.github/instructions/
 .mcp.json
 claude_desktop_config.json

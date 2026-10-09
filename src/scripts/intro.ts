@@ -63,13 +63,11 @@ export function playIntro() {
   }
 
   const brand = intro.querySelector<HTMLElement>('[data-intro-brand]');
-  const lines = intro.querySelectorAll<HTMLElement>('[data-intro-line]');
   video?.addEventListener('playing', () => video.classList.add('is-playing'));
   lockScroll();
 
   const plate = gsap
     .timeline()
-    .from(lines, { scaleY: 0, duration: 1.2, ease: 'expo.out', stagger: 0.08 }, 0)
     .from(brand, { opacity: 0, filter: 'blur(16px)', scale: 0.96, duration: 1.3, ease: 'power3.out' }, 0.2);
 
   let userSkipped = false;
@@ -104,7 +102,6 @@ export function playIntro() {
               },
             })
             .to(brand, { scale: 1.6, opacity: 0, filter: 'blur(8px)', duration: 1.1, ease: 'power2.in' }, 0)
-            .to(lines, { opacity: 0, duration: 0.6, ease: 'power1.out' }, 0)
             .to(intro, { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, 0.25);
         }),
     );

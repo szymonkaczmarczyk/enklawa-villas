@@ -36,3 +36,34 @@ test('słowo „dossier” nie pojawia się w treści strony', async ({ page }) 
     expect(await page.locator('body').innerText()).not.toMatch(/dossier/i);
   }
 });
+
+test('każdy link i nagłówek ma dostępną nazwę', async ({ page }) => {
+  for (const path of pages) {
+    await page.goto(path);
+    const unnamed = await page.evaluate(() =>
+      [...document.querySelectorAll('a, h1, h2, h3, h4, h5, h6')]
+        .filter((element) => {
+          if ((element as HTMLElement).innerText?.trim()) return false;
+          if (element.getAttribute('aria-label')?.trim()) return false;
+          const ids = element.getAttribute('aria-labelledby')?.trim().split(' ') ?? [];
+          if (ids.some((id) => document.getElementById(id)?.innerText.trim())) return false;
+          return ![...element.querySelectorAll('img')].some((image) => image.getAttribute('alt')?.trim());
+        })
+        .map((element) => element.outerHTML.slice(0, 80)),
+    );
+    expect(unnamed, path).toEqual([]);
+  }
+});
+
+test('każda strona ma favicon, ikonę iPhone i manifest, a pliki istnieją', async ({ page, request }) => {
+  for (const path of [...pages, '/nie-ma-takiej-strony/']) {
+    await page.goto(path);
+    await expect(page.locator('link[rel="icon"][href="/favicon.ico"]'), path).toHaveCount(1);
+    await expect(page.locator('link[rel="icon"][href="/favicon.svg"]'), path).toHaveCount(1);
+    await expect(page.locator('link[rel="apple-touch-icon"]'), path).toHaveAttribute('href', '/apple-touch-icon.png');
+    await expect(page.locator('link[rel="manifest"]'), path).toHaveAttribute('href', '/site.webmanifest');
+  }
+  for (const file of ['/favicon.ico', '/favicon.svg', '/apple-touch-icon.png', '/icon-192.png', '/icon-512.png', '/site.webmanifest']) {
+    expect((await request.get(file)).status(), file).toBe(200);
+  }
+});

@@ -1,7 +1,13 @@
 import { gsap } from 'gsap';
 import { reducedMotion } from './scroll';
 
-const narrative = { beatIn: 0.12, beatOut: 0.52, fade: 0.1 };
+const narrative = {
+  fade: 0.08,
+  beats: [
+    { in: 0.06, out: 0.32 },
+    { in: 0.42, out: 0.7 },
+  ],
+};
 const portraitQuery = '(max-aspect-ratio: 4/5)';
 const decodeSpan = { ahead: 40, behind: 12 };
 const lightQuery = '(max-width: 767px), (max-height: 480px)';
@@ -148,17 +154,21 @@ function createSequence(root: HTMLElement) {
 
 function bindNarrative(root: HTMLElement) {
   const track = root.querySelector<HTMLElement>('[data-track]')!;
-  const beat = root.querySelector<HTMLElement>('[data-beat]')!;
+  const beats = root.querySelectorAll<HTMLElement>('[data-beat]');
   const shift = reducedMotion ? 0 : 56;
 
-  gsap
-    .timeline({
-      defaults: { ease: 'none', duration: narrative.fade },
-      scrollTrigger: { trigger: track, start: 'top bottom', end: 'bottom bottom', scrub: reducedMotion ? true : 0.5 },
-    })
-    .fromTo(beat, { opacity: 0, y: shift }, { opacity: 1, y: 0 }, narrative.beatIn)
-    .to(beat, { opacity: 0, y: -shift }, narrative.beatOut)
-    .set({}, {}, 1);
+  const timeline = gsap.timeline({
+    defaults: { ease: 'none', duration: narrative.fade },
+    scrollTrigger: { trigger: track, start: 'top bottom', end: 'bottom bottom', scrub: reducedMotion ? true : 0.5 },
+  });
+  beats.forEach((beat, index) => {
+    const moment = narrative.beats[index];
+    if (!moment) return;
+    timeline
+      .fromTo(beat, { opacity: 0, y: shift }, { opacity: 1, y: 0 }, moment.in)
+      .to(beat, { opacity: 0, y: -shift }, moment.out);
+  });
+  timeline.set({}, {}, 1);
 }
 
 function bindFrames(root: HTMLElement, sequence: Sequence) {

@@ -4,8 +4,8 @@ type Localized = { pl: string; en: string };
 
 export type Residence = {
   film: string;
-  area: number | null;
-  plot: number | null;
+  area: number;
+  plot: number;
   description: { pl: string[]; en: string[] };
   gallery: { image: ImageMetadata; alt: Localized }[];
 };
@@ -14,10 +14,20 @@ const stills = import.meta.glob<{ default: ImageMetadata }>('../assets/residence
 
 const still = (id: string, number: number) => stills[`../assets/residences/${id}-${number}.jpg`].default;
 
+const sizes: Record<string, { area: number; plot: number }> = {
+  cypel: { area: 1150, plot: 9800 },
+  toskania: { area: 1600, plot: 42000 },
+  tatry: { area: 980, plot: 12500 },
+  pinie: { area: 1350, plot: 18000 },
+  klif: { area: 1050, plot: 6400 },
+  baltyk: { area: 920, plot: 15000 },
+  pawilon: { area: 840, plot: 8200 },
+  skaly: { area: 880, plot: 21000 },
+};
+
 const residence = (id: string, description: Residence['description'], alts: Localized[]): Residence => ({
   film: `/video/residence-${id}.mp4`,
-  area: null,
-  plot: null,
+  ...sizes[id],
   description,
   gallery: alts.map((alt, index) => ({ image: still(id, index + 1), alt })),
 });

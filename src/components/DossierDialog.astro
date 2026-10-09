@@ -43,7 +43,7 @@ const copy = {
     <div class="dossier__choices">
       {
         choices.map(({ path, icon, key }) => (
-          <button class="choice" type="button" data-choice={path} aria-keyshortcuts={key}>
+          <button class="choice fill" type="button" data-choice={path} aria-keyshortcuts={key}>
             <Icon name={icon} size={28} class="choice__icon" />
             <span class="choice__title">{d.choices[path].title}</span>
             <span class="choice__text">{d.choices[path].text}</span>
@@ -251,18 +251,13 @@ const copy = {
     width: 100%;
     padding: var(--space-5);
     border: 1px solid var(--color-line-strong);
-    background: linear-gradient(var(--color-surface-raised), var(--color-surface-raised)) no-repeat 0 100% / 100% 0
-      var(--color-bg);
+    background: var(--color-bg);
     text-align: left;
-    transition:
-      border-color var(--duration) var(--ease-out),
-      background-size var(--button-fill-duration) var(--ease-out);
+    transition: border-color var(--duration) var(--ease-out);
   }
 
   .choice:active {
     border-color: var(--travertine-100);
-    background-size: 100% 100%;
-    transition-duration: var(--duration-fast);
   }
 
   .choice :global(.choice__icon) {
@@ -386,7 +381,6 @@ const copy = {
   @media (hover: hover) and (pointer: fine) {
     .choice:hover {
       border-color: var(--travertine-100);
-      background-size: 100% 100%;
     }
   }
 

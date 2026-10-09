@@ -149,11 +149,31 @@ function iconSvg(size, markShare) {
     + '</svg>';
 }
 
-writeFileSync('public/favicon.svg', iconSvg(64, 0.72));
+const pixelColumn = [
+  { x: 1, y: 1, width: 6, height: 1, fill: 'face' },
+  { x: 1, y: 2, width: 6, height: 1, fill: 'shade' },
+  { x: 2, y: 3, width: 2, height: 10, fill: 'face' },
+  { x: 4, y: 3, width: 3, height: 10, fill: 'shade' },
+  { x: 1, y: 13, width: 6, height: 1, fill: 'face' },
+  { x: 1, y: 14, width: 6, height: 1, fill: 'shade' },
+];
+
+function pixelIconSvg() {
+  const colors = { face: palette.travertine, shade: palette.shade };
+  const mirror = (block) => ({ ...block, x: 16 - block.x - block.width });
+  const blocks = [...pixelColumn, ...pixelColumn.map(mirror)];
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">'
+    + `<rect width="16" height="16" fill="${palette.basalt}"/>`
+    + blocks.map((block) => `<rect x="${block.x}" y="${block.y}" width="${block.width}" height="${block.height}" fill="${colors[block.fill]}"/>`).join('')
+    + '</svg>';
+}
+
+const pixelIcon = pixelIconSvg();
+writeFileSync('public/favicon.svg', pixelIcon);
 
 const icoSizes = [16, 32, 48];
 const icoImages = await Promise.all(
-  icoSizes.map((size) => sharp(Buffer.from(iconSvg(size, size <= 16 ? 0.8 : 0.72))).png().toBuffer()),
+  icoSizes.map((size) => sharp(Buffer.from(pixelIcon), { density: 72 * (size / 16) }).resize(size, size, { kernel: 'nearest' }).png().toBuffer()),
 );
 const header = Buffer.alloc(6 + icoSizes.length * 16);
 header.writeUInt16LE(0, 0);
@@ -173,6 +193,28 @@ icoSizes.forEach((size, index) => {
   offset += icoImages[index].length;
 });
 writeFileSync('public/favicon.ico', Buffer.concat([header, ...icoImages]));
+
+for (const size of [192, 512]) {
+  await sharp(Buffer.from(iconSvg(size, 0.56))).png().toFile(`public/icon-${size}.png`);
+}
+writeFileSync(
+  'public/site.webmanifest',
+  `${JSON.stringify(
+    {
+      name: 'Enklawa Villas',
+      short_name: 'Enklawa',
+      icons: [
+        { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+      ],
+      theme_color: palette.basalt,
+      background_color: palette.basalt,
+      display: 'browser',
+    },
+    null,
+    2,
+  )}\n`,
+);
 
 await sharp(Buffer.from(iconSvg(180, 0.62))).png().toFile('public/apple-touch-icon.png');
 

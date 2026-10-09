@@ -40,8 +40,10 @@ export const en: Dictionary = {
   },
   scrolly: {
     label: 'Entering the residence',
-    title: 'Your private enclave.',
-    text: 'The largest off-market residences and estates in Poland.',
+    beats: [
+      { title: 'Your private enclave.', text: 'The largest off-market residences and estates in Poland.' },
+      { title: 'Calm begins at the threshold.', text: 'Forest, distance and an atrium shield the house from outside view.' },
+    ],
     posterAlt: 'A stone path through a misty pine forest leading to a charred timber house.',
   },
   standard: {
@@ -99,7 +101,6 @@ export const en: Dictionary = {
     area: 'Floor area',
     plot: 'Plot',
     price: 'Price',
-    missing: '[[to be completed]]',
     gallery: 'Gallery',
     closingTitle: 'Full details after a call',
     closingText: 'Plans, documents and the exact location are shared by the curator in person, after identity verification.',
@@ -171,7 +172,6 @@ export const en: Dictionary = {
     contactTitle: 'Direct contact',
     concierge: 'Concierge line 24/7',
     companyTitle: 'Company details',
-    companyIntro: 'Legal and operational handling of transactions is provided by:',
     capital: 'Share capital',
     legalTitle: 'Information',
     privacy: 'Privacy policy',
