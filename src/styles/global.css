@@ -141,6 +141,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html.is-reloading body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-intro);
+  background: var(--color-bg);
+}
+
 body::after {
   content: '';
   position: fixed;

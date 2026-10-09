@@ -83,6 +83,19 @@ const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@grap
         root.classList.add('is-intro');
         setTimeout(() => root.classList.remove('is-intro'), 7000);
       }
+      if (intro && !reduced && !fromSite && window.navigation) {
+        let pageNavigatedAt = -Infinity;
+        const uncover = () => root.classList.remove('is-reloading');
+        navigation.addEventListener('navigate', () => (pageNavigatedAt = performance.now()));
+        window.addEventListener('beforeunload', () => {
+          setTimeout(() => {
+            if (performance.now() - pageNavigatedAt < 500 || location.hash) return;
+            root.classList.add('is-reloading');
+            setTimeout(uncover, 3000);
+          });
+        });
+        window.addEventListener('pageshow', uncover);
+      }
     </script>
   </head>
   <body>

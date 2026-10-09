@@ -68,7 +68,7 @@ export function playIntro() {
 
   const plate = gsap
     .timeline()
-    .from(brand, { opacity: 0, filter: 'blur(16px)', scale: 0.96, duration: 1.3, ease: 'power3.out' }, 0.2);
+    .to(brand, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: 1.3, ease: 'power3.out' }, 0.2);
 
   let userSkipped = false;
   let skip = () => {};

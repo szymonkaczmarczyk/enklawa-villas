@@ -18,6 +18,33 @@ test('przejście z innej podstrony na stronę główną pomija intro', async ({ 
   await expect(page.locator('[data-intro]')).toHaveCount(0);
 });
 
+test('odświeżenie zasłania stronę planszą intro, kliknięcie w link nie', async ({ page }) => {
+  await page.goto('/');
+  await finishIntro(page);
+  const covered = () => page.evaluate(() => document.documentElement.classList.contains('is-reloading'));
+  await page.evaluate(() => navigation.dispatchEvent(new Event('navigate')));
+  await page.evaluate(() => window.dispatchEvent(new Event('beforeunload')));
+  await page.waitForTimeout(50);
+  expect(await covered()).toBe(false);
+  await page.waitForTimeout(600);
+  await page.evaluate(() => window.dispatchEvent(new Event('beforeunload')));
+  await expect.poll(covered).toBe(true);
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pageshow')));
+  expect(await covered()).toBe(false);
+});
+
+test('uszkodzona kotwica w adresie nie psuje skryptów strony', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  for (const hash of ['#%', '#%E0%A4%A', '#%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E']) {
+    await page.goto('about:blank');
+    await page.goto(`/${hash}`);
+    await page.locator('[data-dossier-open]').first().click();
+    await expect(page.locator('dialog[open]')).toBeVisible();
+  }
+  expect(errors).toEqual([]);
+});
+
 test('scrollytelling rysuje klatki na canvas podczas przewijania', async ({ page }) => {
   const frames: string[] = [];
   page.on('request', (request) => {

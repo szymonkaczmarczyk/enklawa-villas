@@ -39,5 +39,10 @@ export function scrollToTarget(target: HTMLElement, immediate = false) {
 }
 
 export function targetFromHash(hash: string) {
-  return hash.length > 1 ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
+  if (hash.length < 2) return null;
+  try {
+    return document.getElementById(decodeURIComponent(hash.slice(1)));
+  } catch {
+    return null;
+  }
 }
