@@ -1,0 +1,134 @@
+---
+import { site } from '../data/site';
+import { routes } from '../i18n';
+import Legal from '../layouts/Legal.astro';
+
+const { company } = site;
+const summary = [
+  'Strona ma charakter informacyjny. Prezentowane obiekty nie są ofertą w rozumieniu Kodeksu cywilnego.',
+  'Korzystanie ze strony jest bezpłatne i nie wymaga zakładania konta.',
+  'Szczegóły ofert udostępniamy po weryfikacji tożsamości i zawarciu odrębnej umowy.',
+  `Reklamacje rozpatrujemy w ciągu 14 dni. Wystarczy wiadomość na adres ${site.email}.`,
+];
+---
+
+<Legal lang="pl" route="terms" title="Regulamin strony" summary={summary}>
+  <section>
+    <h2>Postanowienia ogólne</h2>
+    <ol>
+      <li>
+        Regulamin określa zasady korzystania ze strony internetowej {site.domain} (dalej: „Strona”). Jest regulaminem,
+        o którym mowa w art. 8 ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną.
+      </li>
+      <li>
+        Usługodawcą jest <strong>{company.name}</strong> z siedzibą pod adresem {company.address}, KRS {company.krs},
+        NIP {company.nip}, REGON {company.regon}, kapitał zakładowy {company.capital.pl}, adres e-mail{' '}
+        <a href={`mailto:${site.email}`}>{site.email}</a>{' '}(dalej: „Usługodawca”).
+      </li>
+      <li>
+        Usługodawca prowadzi działalność w zakresie pośrednictwa w obrocie nieruchomościami i posiada obowiązkowe
+        ubezpieczenie odpowiedzialności cywilnej, o którym mowa w art. 181 ustawy z dnia 21 sierpnia 1997 r. o gospodarce
+        nieruchomościami: {company.insurance}.
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Usługi świadczone przez Stronę</h2>
+    <ol>
+      <li>
+        Usługodawca świadczy nieodpłatnie dwie usługi: udostępnianie treści informacyjnych oraz przygotowanie zapytania,
+        które użytkownik wysyła samodzielnie ze swojego programu pocztowego.
+      </li>
+      <li>
+        Umowa o udostępnianie treści zostaje zawarta z chwilą otwarcia Strony i rozwiązuje się z chwilą jej opuszczenia.
+        Umowa o przygotowanie zapytania zostaje zawarta z chwilą otwarcia formularza i rozwiązuje się z chwilą jego
+        zamknięcia.
+      </li>
+      <li>
+        Szczegółowe materiały o obiektach udostępniamy po weryfikacji tożsamości przeprowadzonej zgodnie
+        z ustawą z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu i po zawarciu
+        odrębnej umowy, na przykład umowy pośrednictwa albo umowy o zachowaniu poufności.
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Wymagania techniczne</h2>
+    <p>
+      Do korzystania ze Strony potrzebne jest urządzenie z dostępem do internetu i aktualna przeglądarka internetowa.
+      Animacje i formularz zapytania wymagają włączonej obsługi JavaScriptu, a wysłanie zapytania wymaga skonfigurowanego
+      programu pocztowego.
+    </p>
+  </section>
+
+  <section>
+    <h2>Zasady korzystania ze Strony</h2>
+    <ol>
+      <li>Użytkownik nie może dostarczać treści o charakterze bezprawnym.</li>
+      <li>Zabronione jest podejmowanie działań, które zakłócają działanie Strony lub obciążają ją ponad zwykły użytek.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Charakter informacji o nieruchomościach</h2>
+    <ol>
+      <li>
+        Informacje o nieruchomościach prezentowane na Stronie nie stanowią oferty w rozumieniu art. 66 Kodeksu cywilnego.
+        Są zaproszeniem do rozpoczęcia rokowań w rozumieniu art. 71 Kodeksu cywilnego.
+      </li>
+      <li>Zdjęcia i wizualizacje mają charakter poglądowy.</li>
+      <li>Wiążące warunki transakcji określa wyłącznie umowa zawarta w formie wymaganej przepisami prawa.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Własność intelektualna</h2>
+    <p>
+      Treści, zdjęcia, wizualizacje, logo i układ graficzny Strony są chronione prawem autorskim. Kopiowanie
+      i rozpowszechnianie ich bez zgody Usługodawcy jest zabronione, z wyjątkiem dozwolonego użytku przewidzianego przez
+      przepisy.
+    </p>
+  </section>
+
+  <section>
+    <h2>Reklamacje</h2>
+    <ol>
+      <li>
+        Reklamacje dotyczące działania Strony można składać na adres{' '}
+        <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </li>
+      <li>Reklamacja powinna zawierać opis problemu i dane kontaktowe osoby, która ją składa.</li>
+      <li>
+        Usługodawca rozpatruje reklamację w terminie 14 dni od jej otrzymania i odpowiada na adres, z którego ją wysłano.
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Dane osobowe</h2>
+    <p>
+      Zasady przetwarzania danych osobowych opisuje{' '}
+      <a href={routes.privacy.pl}>polityka prywatności</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Postanowienia końcowe</h2>
+    <ol>
+      <li>
+        W sprawach nieuregulowanych w Regulaminie stosuje się przepisy prawa polskiego, w szczególności Kodeksu cywilnego
+        i ustawy o świadczeniu usług drogą elektroniczną.
+      </li>
+      <li>
+        Konsument może skorzystać z pozasądowych sposobów rozpatrywania reklamacji i dochodzenia roszczeń, w tym z pomocy
+        miejskiego lub powiatowego rzecznika konsumentów.
+      </li>
+      <li>
+        Usługodawca może zmienić Regulamin z ważnych przyczyn, takich jak zmiana przepisów lub zakresu usług. Zmiany
+        obowiązują od dnia publikacji na Stronie i nie naruszają praw nabytych przed tą datą.
+      </li>
+      <li>Regulamin obowiązuje od {site.legalUpdated.pl}</li>
+    </ol>
+  </section>
+</Legal>

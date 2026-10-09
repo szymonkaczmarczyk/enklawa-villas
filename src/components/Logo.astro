@@ -1,0 +1,29 @@
+---
+import horizontal from '../assets/brand/logo-horizontal.svg?raw';
+import mark from '../assets/brand/logo-mark.svg?raw';
+import stacked from '../assets/brand/logo-stacked.svg?raw';
+
+const variants = { horizontal, stacked, mark };
+
+interface Props {
+  variant: keyof typeof variants;
+  class?: string;
+}
+
+const { variant, class: className } = Astro.props;
+const classes = ['logo', `logo--${variant}`, className].filter(Boolean).join(' ');
+const svg = variants[variant].replace('<svg ', `<svg class="${classes}" aria-hidden="true" focusable="false" `);
+---
+
+<Fragment set:html={svg} />
+
+<style is:global>
+  .logo {
+    width: auto;
+    color: var(--color-text);
+  }
+
+  .logo-shade {
+    fill: var(--logo-shade);
+  }
+</style>

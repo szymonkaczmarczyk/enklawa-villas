@@ -1,0 +1,167 @@
+---
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+import { dictionaries, routes, type Lang } from '../i18n';
+import Base from './Base.astro';
+
+interface Props {
+  lang: Lang;
+  route: 'privacy' | 'terms';
+  title: string;
+  summary: string[];
+}
+
+const { lang, route, title, summary } = Astro.props;
+const t = dictionaries[lang];
+---
+
+<Base lang={lang} route={route} title={t.meta[route].title} description={t.meta[route].description}>
+  <article class="legal container">
+    <a class="legal__back" href={routes.home[lang]}>
+      <Icon name="arrowLeft" size={20} />
+      <span class="link">{t.legal.back}</span>
+    </a>
+
+    <header class="legal__header">
+      <h1 class="t-h1">{title}</h1>
+      <p class="legal__updated">{t.legal.updated}: {site.legalUpdated[lang]}</p>
+    </header>
+
+    <aside class="legal__summary" aria-labelledby="legal-summary">
+      <h2 class="legal__summary-title t-h4" id="legal-summary">{t.legal.summary}</h2>
+      <ul>
+        {summary.map((item) => <li>{item}</li>)}
+      </ul>
+    </aside>
+
+    <div class="legal__body">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .legal {
+    display: grid;
+    gap: var(--space-7);
+    padding-top: calc(var(--header-height) + var(--space-8));
+    padding-bottom: var(--space-10);
+  }
+
+  .legal > * {
+    max-width: 52rem;
+  }
+
+  .legal__back {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .legal__header {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .legal__updated {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .legal__summary {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+  }
+
+  .legal__summary-title {
+    letter-spacing: var(--tracking-body);
+  }
+
+  .legal__summary ul {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .legal__summary li {
+    position: relative;
+    padding-left: var(--space-5);
+    color: var(--color-text-muted);
+  }
+
+  .legal__summary li::before {
+    content: '';
+    position: absolute;
+    top: 0.75em;
+    left: 0;
+    width: 10px;
+    height: 1px;
+    background: var(--color-accent);
+  }
+
+  .legal__body {
+    display: grid;
+    gap: var(--space-7);
+    counter-reset: section;
+  }
+
+  .legal__body :global(section) {
+    display: grid;
+    gap: var(--space-4);
+    counter-increment: section;
+  }
+
+  .legal__body :global(h2) {
+    font-size: var(--fs-h3);
+    line-height: var(--lh-heading);
+  }
+
+  .legal__body :global(h2)::before {
+    content: counter(section) '. ';
+    color: var(--color-accent);
+  }
+
+  .legal__body :global(p),
+  .legal__body :global(li) {
+    max-width: var(--measure);
+    color: var(--color-text-muted);
+  }
+
+  .legal__body :global(strong) {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .legal__body :global(ul),
+  .legal__body :global(ol) {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: var(--space-5);
+  }
+
+  .legal__body :global(ul) {
+    list-style: disc;
+  }
+
+  .legal__body :global(ol) {
+    list-style: decimal;
+  }
+
+  .legal__body :global(li::marker) {
+    color: var(--color-accent);
+  }
+
+  .legal__body :global(a) {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+</style>

@@ -1,0 +1,11 @@
+---
+import Home from '../components/Home.astro';
+import { dictionaries } from '../i18n';
+import Base from '../layouts/Base.astro';
+
+const { meta } = dictionaries.pl;
+---
+
+<Base lang="pl" route="home" title={meta.home.title} description={meta.home.description} intro>
+  <Home lang="pl" />
+</Base>

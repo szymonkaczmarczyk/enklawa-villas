@@ -1,0 +1,49 @@
+---
+import arrowLeft from '@phosphor-icons/core/light/arrow-left-light.svg?raw';
+import arrowRight from '@phosphor-icons/core/light/arrow-right-light.svg?raw';
+import arrowUpRight from '@phosphor-icons/core/light/arrow-up-right-light.svg?raw';
+import check from '@phosphor-icons/core/light/check-light.svg?raw';
+import compass from '@phosphor-icons/core/light/compass-light.svg?raw';
+import copy from '@phosphor-icons/core/light/copy-light.svg?raw';
+import envelope from '@phosphor-icons/core/light/envelope-simple-light.svg?raw';
+import key from '@phosphor-icons/core/light/key-light.svg?raw';
+import list from '@phosphor-icons/core/light/list-light.svg?raw';
+import lock from '@phosphor-icons/core/light/lock-key-light.svg?raw';
+import mapPin from '@phosphor-icons/core/light/map-pin-light.svg?raw';
+import phone from '@phosphor-icons/core/light/phone-light.svg?raw';
+import warning from '@phosphor-icons/core/light/warning-circle-light.svg?raw';
+import close from '@phosphor-icons/core/light/x-light.svg?raw';
+
+const icons = {
+  arrowLeft,
+  arrowRight,
+  arrowUpRight,
+  check,
+  compass,
+  copy,
+  envelope,
+  key,
+  list,
+  lock,
+  mapPin,
+  phone,
+  warning,
+  close,
+};
+
+export type IconName = keyof typeof icons;
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 20, class: className } = Astro.props;
+const svg = icons[name].replace(
+  '<svg ',
+  `<svg width="${size}" height="${size}" aria-hidden="true" focusable="false"${className ? ` class="${className}"` : ''} `,
+);
+---
+
+<Fragment set:html={svg} />

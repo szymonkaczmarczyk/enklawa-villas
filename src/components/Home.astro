@@ -1,0 +1,20 @@
+---
+import type { Lang } from '../i18n';
+import Hero from './Hero.astro';
+import Intro from './Intro.astro';
+import Paths from './Paths.astro';
+import Portfolio from './Portfolio.astro';
+import Scrolly from './Scrolly.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<Intro />
+<Hero lang={lang} />
+<Scrolly lang={lang} />
+<Portfolio lang={lang} />
+<Paths lang={lang} />

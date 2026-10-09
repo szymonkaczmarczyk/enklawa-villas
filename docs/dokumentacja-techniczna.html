@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enklawa Villas: dokumentacja techniczna</title>
+<style>
+  :root {
+    --ink: #1f2937;
+    --muted: #4b5563;
+    --line: #d1d5db;
+    --head: #eef2fb;
+    --blue: #2563eb;
+    --code-bg: #111827;
+    --code-ink: #e5e7eb;
+    --chip: #f1f3f7;
+    --get: #2563eb;
+    --post: #059669;
+    --put: #d97706;
+    --patch: #7c3aed;
+    --delete: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    background: #fff;
+    color: var(--ink);
+    font: 14px/1.6 "Segoe UI", "Noto Sans", system-ui, -apple-system, sans-serif;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 56px 40px 80px; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 6px; }
+  h2 {
+    font-size: 20px;
+    margin: 0 0 18px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--blue);
+  }
+  h3 { font-size: 16px; margin: 28px 0 10px; }
+  h4 { color: var(--blue); font-size: 13.5px; margin: 22px 0 8px; }
+  p { margin: 0 0 12px; }
+  .lead { color: var(--muted); margin-bottom: 18px; }
+  code {
+    font: 12.5px/1.5 "Cascadia Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+    background: var(--chip);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+  pre {
+    margin: 0 0 16px;
+    padding: 16px 18px;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    border-radius: 8px;
+    font: 12.5px/1.6 "Cascadia Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 13.5px; }
+  th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--head); font-weight: 600; }
+  td:first-child code { white-space: nowrap; }
+  td table { margin: 8px 0 4px; }
+  .endpoint {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .endpoint p:last-child { margin-bottom: 0; }
+  .endpoint__line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .badge {
+    display: inline-block;
+    min-width: 54px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+  .badge--get { background: var(--get); }
+  .badge--post { background: var(--post); }
+  .badge--put { background: var(--put); }
+  .badge--patch { background: var(--patch); }
+  .badge--delete { background: var(--delete); }
+  .lock { font-size: 12px; color: var(--muted); }
+  section { margin-top: 44px; }
+  .page { break-before: page; }
+  .toc { columns: 2; column-gap: 32px; padding-left: 18px; margin: 0 0 8px; }
+  .toc li { break-inside: avoid; margin-bottom: 2px; }
+  .note { color: var(--muted); font-size: 13px; }
+  @page { size: A4; margin: 18mm 16mm; }
+  @media print {
+    main { padding: 0; max-width: none; }
+    section { margin-top: 0; }
+    pre, table, .endpoint { break-inside: avoid; }
+    h2, h3, h4 { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>Enklawa Villas: dokumentacja techniczna</h1>
+<p class="lead">
+  Statyczna strona agencji rezydencji off-market: strona główna z intro i scrollytellingiem, portfolio
+  ośmiu rezydencji z podstronami, okno zapytania, strony prawne. Dwa języki: PL pod <code>/</code>, EN pod <code>/en/</code>.<br>
+  Strona nie ma API ani backendu. Ta dokumentacja opisuje trasy, model danych, skrypty mediów, komponenty i testy.
+</p>
+<pre>https://enklawavillas.com
+http://localhost:4330   (npm run dev)
+http://127.0.0.1:4332   (podgląd builda w testach e2e)</pre>
+
+<h3>Spis treści</h3>
+<ol class="toc">
+  <li><a href="#arch">Architektura i stack</a></li>
+  <li><a href="#routes">Trasy</a></li>
+  <li><a href="#home">GET /</a></li>
+  <li><a href="#residence">GET /rezydencje/:id/</a></li>
+  <li><a href="#seo">GET /sitemap.xml · /robots.txt · 404</a></li>
+  <li><a href="#property">Obiekt Property</a></li>
+  <li><a href="#residence-data">Obiekt Residence</a></li>
+  <li><a href="#site">Dane firmy i teksty</a></li>
+  <li><a href="#enquiry">Okno zapytania</a></li>
+  <li><a href="#button">Komponent Button</a></li>
+  <li><a href="#motion">Intro i scrollytelling</a></li>
+  <li><a href="#media">Skrypty mediów</a></li>
+  <li><a href="#tests">Testy e2e</a></li>
+  <li><a href="#deploy">Wdrożenie i braki</a></li>
+</ol>
+
+<section id="arch">
+  <h2>Architektura i stack</h2>
+  <p>Astro buduje wszystkie strony do statycznego HTML w <code>dist/</code>. JavaScript w przeglądarce to jeden pakiet
+  (GSAP, Lenis i skrypty strony) oraz mały skrypt podstrony rezydencji.</p>
+<pre>videos/ (źródła, poza repo)
+   │  npm run hero · frames · previews · residences · brand  (ffmpeg, sharp)
+   ▼
+public/video, public/frames, src/assets ──► astro build ──► dist/ (statyczny HTML, AVIF/WebP)
+                                                              │
+przeglądarka ◄────────────────────────────────────────────────┘
+   ├─ app.ts      intro, Lenis, scrollytelling, karty, slider, okno zapytania
+   └─ mailto:     wysłanie zapytania przez program pocztowy (brak backendu)</pre>
+  <table>
+    <tr><th>Warstwa</th><th>Narzędzie</th><th>Uwagi</th></tr>
+    <tr><td>Strony</td><td>Astro 7, wyjście statyczne</td><td>23 strony HTML, obrazy przez <code>astro:assets</code> (AVIF, WebP, <code>srcset</code>)</td></tr>
+    <tr><td>Ruch</td><td>GSAP 3.15 (ScrollTrigger, SplitText), Lenis 1.3</td><td>Pakiet JS ok. 57 KB gzip łącznie</td></tr>
+    <tr><td>Krój</td><td>DM Sans Variable (Fontsource)</td><td>Hostowany lokalnie, oś <code>opsz</code>, polskie znaki</td></tr>
+    <tr><td>Ikony</td><td>Phosphor <code>light</code></td><td>Wstawiane inline przez <code>Icon.astro</code></td></tr>
+    <tr><td>Media</td><td><code>ffmpeg-static</code>, <code>sharp</code>, <code>opentype.js</code></td><td>Tylko w skryptach deweloperskich</td></tr>
+    <tr><td>Testy</td><td>Playwright 1.63</td><td>30 testów na Chromium, desktop i Pixel 7</td></tr>
+  </table>
+  <p class="note">Strona nie zapisuje cookies ani danych w <code>localStorage</code> i <code>sessionStorage</code> i nie ładuje zasobów z zewnątrz.
+  Dlatego nie ma banera zgody. Pilnuje tego test „strona nic nie zapisuje w przeglądarce”.</p>
+</section>
+
+<section id="routes" class="page">
+  <h2>Trasy</h2>
+  <table>
+    <tr><th>Adres PL</th><th>Adres EN</th><th>Co to jest</th></tr>
+    <tr><td><code>/</code></td><td><code>/en/</code></td><td>Intro, hero z filmem, scrollytelling, Standard Enklawy, portfolio, dwie ścieżki</td></tr>
+    <tr><td><code>/rezydencje/:id/</code></td><td><code>/en/residences/:id/</code></td><td>Podstrona rezydencji (8 sztuk)</td></tr>
+    <tr><td><code>/polityka-prywatnosci/</code></td><td><code>/en/privacy-policy/</code></td><td>Polityka prywatności (RODO)</td></tr>
+    <tr><td><code>/regulamin/</code></td><td><code>/en/terms/</code></td><td>Regulamin strony</td></tr>
+    <tr><td><code>/404.html</code></td><td>(wspólna)</td><td>Własna strona błędu, po polsku z linkiem do wersji EN</td></tr>
+    <tr><td><code>/sitemap.xml</code></td><td></td><td>22 adresy z <code>hreflang</code> i <code>x-default</code></td></tr>
+    <tr><td><code>/robots.txt</code></td><td></td><td>Zezwala na wszystko, wskazuje sitemapę</td></tr>
+  </table>
+  <p>Mapa tras jest w <code>src/i18n/index.ts</code>: obiekt <code>routes</code> dla stron stałych i funkcja
+  <code>residencePaths(id)</code> dla rezydencji. Z tych samych danych korzystają canonical, <code>hreflang</code>,
+  przełącznik języka i sitemap.</p>
+  <h4>Kotwice strony głównej</h4>
+  <table>
+    <tr><th>PL</th><th>EN</th><th>Sekcja</th></tr>
+    <tr><td><code>#standard</code></td><td><code>#standard</code></td><td>Standard Enklawy (cztery kryteria)</td></tr>
+    <tr><td><code>#rezydencje</code></td><td><code>#residences</code></td><td>Portfolio i slider</td></tr>
+    <tr><td><code>#kontakt</code></td><td><code>#contact</code></td><td>Dwie ścieżki przed stopką</td></tr>
+  </table>
+</section>
+
+<section id="home" class="page">
+  <h2>GET /</h2>
+  <div class="endpoint">
+    <div class="endpoint__line"><span class="badge badge--get">GET</span><code>/</code> <code>/en/</code></div>
+    <p>Strona główna. Przy wejściu z zewnątrz gra intro (plansza z logo przechodzi w film), potem odsłania się hero.</p>
+  </div>
+  <h4>Zachowanie intro</h4>
+  <table>
+    <tr><th>Sytuacja</th><th>Intro</th></tr>
+    <tr><td>Wejście z zewnątrz, bez kotwicy</td><td>Gra raz, ok. 3 s, do pominięcia kółkiem, dotykiem, klawiszem lub kliknięciem</td></tr>
+    <tr><td>Przejście z innej podstrony Enklawy</td><td>Pominięte (<code>document.referrer</code> z tej samej domeny)</td></tr>
+    <tr><td>Adres z kotwicą, np. <code>/#rezydencje</code></td><td>Pominięte, strona przewija się do sekcji</td></tr>
+    <tr><td><code>prefers-reduced-motion: reduce</code></td><td>Pominięte, w hero tylko plakat, bez filmów i klatek</td></tr>
+  </table>
+  <h4>Atrybuty na &lt;html&gt; ustawiane przez skrypt inline</h4>
+  <table>
+    <tr><th>Atrybut</th><th>Opis</th></tr>
+    <tr><td><code>class="js"</code></td><td>JavaScript działa</td></tr>
+    <tr><td><code>class="motion"</code> / <code>"reduced"</code></td><td>Wynik <code>prefers-reduced-motion</code></td></tr>
+    <tr><td><code>class="is-intro"</code></td><td>Intro w toku, zdejmowane po zakończeniu albo po 7 s awaryjnie</td></tr>
+    <tr><td><code>data-intro-mode="play"</code></td><td>Intro ma zagrać. Nie używać nazwy <code>data-intro</code>: to selektor planszy i skrypt usunąłby cały dokument</td></tr>
+  </table>
+  <h4>Karty portfolio</h4>
+  <p>Kliknięcie w kartę prowadzi na podstronę rezydencji (warstwa <code>a.card__overlay</code>). Przycisk
+  „Zapytaj o obiekt” leży nad nią i otwiera okno zapytania z kontekstem obiektu. Podgląd wideo gra po najechaniu
+  (kursor) albo raz, gdy karta jest w 60% w kadrze (dotyk). Slider „Więcej z portfolio” przewija się strzałkami,
+  gestem i przeciąganiem myszą (próg 6 px, kliknięcie po przeciągnięciu jest ignorowane).</p>
+</section>
+
+<section id="residence" class="page">
+  <h2>GET /rezydencje/:id/</h2>
+  <div class="endpoint">
+    <div class="endpoint__line"><span class="badge badge--get">GET</span><code>/rezydencje/:id/</code> <code>/en/residences/:id/</code></div>
+    <p>Podstrona rezydencji, generowana przy buildzie przez <code>getStaticPaths</code> z listy <code>properties</code>.</p>
+  </div>
+  <h4>Parametry ścieżki</h4>
+  <table>
+    <tr><th>Parametr</th><th>Wymagany</th><th>Opis</th></tr>
+    <tr><td><code>id</code></td><td>tak</td><td>
+      Identyfikator rezydencji
+      <table>
+        <tr><th>Wartość</th><th>Rezydencja</th></tr>
+        <tr><td><code>cypel</code></td><td>Rezydencja na cyplu, Minorka</td></tr>
+        <tr><td><code>toskania</code></td><td>Posiadłość wśród cyprysów, Val d'Orcia</td></tr>
+        <tr><td><code>tatry</code></td><td>Sanktuarium pod Tatrami, Podhale</td></tr>
+        <tr><td><code>pinie</code></td><td>Rezydencja w sosnach pinii, Ramatuelle</td></tr>
+        <tr><td><code>klif</code></td><td>Rezydencja na klifie, Algarve</td></tr>
+        <tr><td><code>baltyk</code></td><td>Rezydencja nad Bałtykiem, Pomorze Zachodnie</td></tr>
+        <tr><td><code>pawilon</code></td><td>Pawilon z trawertynu, Beskid Śląski</td></tr>
+        <tr><td><code>skaly</code></td><td>Dom wśród czerwonych skał, Andaluzja</td></tr>
+      </table>
+    </td></tr>
+  </table>
+  <h4>Przykład żądania</h4>
+<pre>curl -sI https://enklawavillas.com/rezydencje/tatry/</pre>
+  <h4>Odpowiedź: nieznany identyfikator (404)</h4>
+<pre>GET /rezydencje/nie-ma/  →  404, treść z dist/404.html</pre>
+  <h4>Budowa strony</h4>
+  <table>
+    <tr><th>Sekcja</th><th>Opis</th></tr>
+    <tr><td>Hero</td><td>Zdjęcie, na które nachodzi film (<code>residence-&lt;id&gt;.mp4</code>, gra raz i zostaje na ostatniej klatce). Link „Wszystkie rezydencje” po lewej u góry, lokalizacja, nazwa (H1), „Zapytaj o obiekt”, cena</td></tr>
+    <tr><td>Opis</td><td>Dwa akapity z <code>residences.ts</code> i tabela: lokalizacja, powierzchnia, działka, cena</td></tr>
+    <tr><td>Galeria</td><td>Trzy kadry z filmu w układzie 1-2-1 (szeroki 21:9, para 4:3 i 4:5 z przesunięciem)</td></tr>
+    <tr><td>Zamknięcie</td><td>„Szczegóły oferty po rozmowie” i przycisk „Umów rozmowę”</td></tr>
+    <tr><td>Następna rezydencja</td><td>Link do kolejnej z listy, po ostatniej wraca do pierwszej</td></tr>
+  </table>
+  <h4>Meta</h4>
+  <table>
+    <tr><th>Klucz</th><th>Wartość</th></tr>
+    <tr><td><code>title</code></td><td><code>&lt;nazwa&gt;, &lt;lokalizacja&gt;: rezydencja off-market | Enklawa Villas</code></td></tr>
+    <tr><td><code>description</code></td><td>Nazwa, lokalizacja i pierwszy akapit opisu</td></tr>
+    <tr><td><code>og:image</code></td><td>Kadr rezydencji przycięty do 1200×630 (JPG)</td></tr>
+    <tr><td><code>canonical</code>, <code>hreflang</code></td><td>Z <code>residencePaths(id)</code>, z <code>x-default</code> na wersję PL</td></tr>
+  </table>
+</section>
+
+<section id="seo" class="page">
+  <h2>GET /sitemap.xml · /robots.txt · 404</h2>
+  <div class="endpoint">
+    <div class="endpoint__line"><span class="badge badge--get">GET</span><code>/sitemap.xml</code></div>
+    <p>Generowana w <code>src/pages/sitemap.xml.ts</code> ze stron stałych i rezydencji. Każdy adres ma warianty językowe.</p>
+  </div>
+  <h4>Odpowiedź: sukces (skrócony przykład)</h4>
+<pre>&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"&gt;
+&lt;url&gt;&lt;loc&gt;https://enklawavillas.com/rezydencje/tatry/&lt;/loc&gt;
+  &lt;xhtml:link rel="alternate" hreflang="pl" href="https://enklawavillas.com/rezydencje/tatry/"/&gt;
+  &lt;xhtml:link rel="alternate" hreflang="en" href="https://enklawavillas.com/en/residences/tatry/"/&gt;
+  &lt;xhtml:link rel="alternate" hreflang="x-default" href="https://enklawavillas.com/rezydencje/tatry/"/&gt;
+&lt;/url&gt;
+…
+&lt;/urlset&gt;</pre>
+  <div class="endpoint">
+    <div class="endpoint__line"><span class="badge badge--get">GET</span><code>/robots.txt</code></div>
+    <p>Generowany w <code>src/pages/robots.txt.ts</code>.</p>
+  </div>
+<pre>User-agent: *
+Allow: /
+
+Sitemap: https://enklawavillas.com/sitemap.xml</pre>
+  <div class="endpoint">
+    <div class="endpoint__line"><span class="badge badge--get">GET</span><code>/404.html</code></div>
+    <p>Własna strona błędu w stylu całej strony, z <code>noindex</code>, przyciskami „Wróć na stronę główną” i „Umów rozmowę”
+    oraz linkiem do wersji angielskiej. Hosting musi serwować ją dla nieznanych adresów.</p>
+  </div>
+</section>
+
+<section id="property" class="page">
+  <h2>Obiekt Property</h2>
+  <p>Plik <code>src/data/properties.ts</code>. Kolejność w tablicy to kolejność w portfolio i w nawigacji „Następna rezydencja”.</p>
+  <table>
+    <tr><th>Klucz</th><th>Typ</th><th>Opis</th></tr>
+    <tr><td><code>id</code></td><td><code>string</code></td><td>Identyfikator, część adresu podstrony i nazw plików mediów</td></tr>
+    <tr><td><code>image</code></td><td><code>ImageMetadata</code></td><td>Zdjęcie karty i plakat podstrony (<code>src/assets/properties/&lt;id&gt;.jpg</code>)</td></tr>
+    <tr><td><code>preview</code></td><td><code>string</code></td><td>5-sekundowy podgląd w karcie (<code>/video/&lt;id&gt;.mp4</code>)</td></tr>
+    <tr><td><code>placement</code></td><td><code>string</code></td><td>
+      Miejsce na stronie głównej
+      <table>
+        <tr><th>Wartość</th><th>Znaczenie</th></tr>
+        <tr><td><code>wide</code></td><td>Szeroka karta w siatce 1-2-1</td></tr>
+        <tr><td><code>left</code></td><td>Lewa z pary (4:3)</td></tr>
+        <tr><td><code>right</code></td><td>Prawa z pary (4:5, z przesunięciem)</td></tr>
+        <tr><td><code>more</code></td><td>Slider „Więcej z portfolio”</td></tr>
+      </table>
+    </td></tr>
+    <tr><td><code>focus</code></td><td><code>string</code></td><td>Punkt kadru (<code>object-position</code>), np. <code>40% 50%</code></td></tr>
+    <tr><td><code>name</code>, <code>location</code></td><td><code>{ pl, en }</code></td><td>Nazwa i lokalizacja</td></tr>
+    <tr><td><code>alt</code></td><td><code>{ pl, en }</code></td><td>Tekst alternatywny zdjęcia</td></tr>
+    <tr><td><code>transactionPrice</code></td><td><code>number | null</code></td><td>Cena w PLN albo <code>null</code> dla „Wycena na zapytanie”. Format przez <code>formatPrice(value, lang)</code>: <code>18 500 000 PLN</code> / <code>PLN 18,500,000</code></td></tr>
+  </table>
+</section>
+
+<section id="residence-data">
+  <h2>Obiekt Residence</h2>
+  <p>Plik <code>src/data/residences.ts</code>, klucz to <code>id</code> z Property. Kadry galerii są ładowane przez
+  <code>import.meta.glob</code> z <code>src/assets/residences/&lt;id&gt;-{1,2,3}.jpg</code>.</p>
+  <table>
+    <tr><th>Klucz</th><th>Typ</th><th>Opis</th></tr>
+    <tr><td><code>film</code></td><td><code>string</code></td><td>Pełny film do hero podstrony (<code>/video/residence-&lt;id&gt;.mp4</code>)</td></tr>
+    <tr><td><code>area</code></td><td><code>number | null</code></td><td>Powierzchnia w m². <code>null</code> pokazuje „[[do uzupełnienia]]”</td></tr>
+    <tr><td><code>plot</code></td><td><code>number | null</code></td><td>Działka w m². Jak wyżej</td></tr>
+    <tr><td><code>description</code></td><td><code>{ pl: string[], en: string[] }</code></td><td>Akapity opisu, pierwszy jest leadem i opisem meta. W PL jednoliterowe słowa dostają twardą spację</td></tr>
+    <tr><td><code>gallery</code></td><td><code>{ image, alt: { pl, en } }[]</code></td><td>Trzy kadry z tekstem alternatywnym</td></tr>
+  </table>
+  <p class="note">Opisy mówią tylko o tym, co widać na nagraniach. Metraży, liczby sypialni ani cen nie dopisujemy bez danych od właściciela.</p>
+</section>
+
+<section id="site" class="page">
+  <h2>Dane firmy i teksty</h2>
+  <h4>src/data/site.ts</h4>
+  <table>
+    <tr><th>Klucz</th><th>Opis</th></tr>
+    <tr><td><code>email</code></td><td>Adres, na który idą zapytania (<code>office@enklawavillas.com</code>)</td></tr>
+    <tr><td><code>phone</code></td><td>Infolinia konsjerża. Dopóki zawiera <code>[[</code>, nie jest linkiem <code>tel:</code></td></tr>
+    <tr><td><code>company.*</code></td><td>Adres, KRS, NIP, REGON, kapitał, polisa OC, hosting, poczta, retencja logów. Używane w stopce i dokumentach prawnych</td></tr>
+    <tr><td><code>legalUpdated</code></td><td>Data aktualizacji dokumentów prawnych</td></tr>
+  </table>
+  <h4>src/i18n</h4>
+  <table>
+    <tr><th>Eksport</th><th>Opis</th></tr>
+    <tr><td><code>dictionaries</code></td><td>Teksty interfejsu <code>pl</code> i <code>en</code>. Polskie przechodzą przez <code>bindShortWords</code> (twarda spacja po „a, i, o, u, w, z”)</td></tr>
+    <tr><td><code>routes</code></td><td>Trasy stron stałych PL i EN</td></tr>
+    <tr><td><code>residencePaths(id)</code></td><td>Trasy podstrony rezydencji</td></tr>
+    <tr><td><code>formatPrice(value, lang)</code></td><td>Cena z separatorem tysięcy i twardą spacją przed walutą</td></tr>
+  </table>
+  <p class="note">Na stronie nie używamy słowa „dossier”. Główne wezwanie to „Umów rozmowę” / „Book a call”, materiały po weryfikacji to „szczegóły oferty”. Test e2e pilnuje, żeby słowo nie wróciło.</p>
+</section>
+
+<section id="enquiry" class="page">
+  <h2>Okno zapytania</h2>
+  <div class="endpoint">
+    <div class="endpoint__line"><span class="badge badge--post">MAILTO</span><code>mailto:office@enklawavillas.com</code></div>
+    <p>Okno w trzech krokach: wybór ścieżki, dane kontaktowe, potwierdzenie. Bez backendu: po walidacji strona otwiera program pocztowy z gotową wiadomością.</p>
+  </div>
+  <h4>Otwieranie okna (atrybuty HTML)</h4>
+  <table>
+    <tr><th>Atrybut</th><th>Wymagany</th><th>Opis</th></tr>
+    <tr><td><code>data-dossier-open</code></td><td>tak</td><td>
+      Otwiera okno po kliknięciu elementu
+      <table>
+        <tr><th>Wartość</th><th>Znaczenie</th></tr>
+        <tr><td>(pusta)</td><td>Zaczyna od wyboru ścieżki</td></tr>
+        <tr><td><code>buy</code></td><td>Od razu formularz „Poszukujesz posiadłości”</td></tr>
+        <tr><td><code>sell</code></td><td>Od razu formularz „Powierzasz rezydencję”</td></tr>
+      </table>
+    </td></tr>
+    <tr><td><code>data-dossier-context</code></td><td>nie</td><td>Obiekt, którego dotyczy zapytanie, np. <code>Rezydencja nad Bałtykiem, Pomorze Zachodnie, Polska</code></td></tr>
+  </table>
+  <h4>Pola formularza</h4>
+  <table>
+    <tr><th>Pole</th><th>Wymagane</th><th>Walidacja</th></tr>
+    <tr><td><code>name</code></td><td>tak</td><td>Co najmniej 2 znaki. Błąd: „Podaj imię i nazwisko.”</td></tr>
+    <tr><td><code>contact</code></td><td>tak</td><td>Adres e-mail albo telefon z co najmniej 9 cyframi (dozwolone <code>+</code>, spacje, nawiasy, myślniki)</td></tr>
+    <tr><td><code>note</code></td><td>nie</td><td>Dowolny tekst</td></tr>
+  </table>
+  <p>Walidacja rusza przy pierwszej próbie wysłania, potem na bieżąco. Fokus wraca do pierwszego błędnego pola.
+  Klawisze <code>1</code> i <code>2</code> wybierają ścieżkę, <code>Esc</code> zamyka okno.</p>
+  <h4>Przykład: wiadomość, którą składa strona</h4>
+<pre>Temat: Zapytanie: poszukuję posiadłości | Rezydencja nad Bałtykiem, Pomorze Zachodnie, Polska
+
+Ścieżka: Poszukuję posiadłości
+Obiekt: Rezydencja nad Bałtykiem, Pomorze Zachodnie, Polska
+Imię i nazwisko: Jan Przykładowy
+Kontakt: jan@example.com
+Wiadomość: Interesuje mnie wybrzeże, horyzont pół roku.
+
+Wysłano ze strony enklawavillas.com</pre>
+  <p class="note">Na telefonach bez skonfigurowanej poczty <code>mailto:</code> nic nie otworzy. Ekran potwierdzenia daje wtedy
+  „Skopiuj wiadomość” i adres e-mail. Docelowo wysyłka powinna iść przez endpoint serwerowy (walidacja, limit zgłoszeń, Turnstile).</p>
+</section>
+
+<section id="button" class="page">
+  <h2>Komponent Button</h2>
+  <p><code>src/components/Button.astro</code>. Renderuje <code>&lt;a&gt;</code>, gdy podano <code>href</code>, inaczej <code>&lt;button type="button"&gt;</code>.
+  Pozostałe atrybuty (np. <code>data-dossier-open</code>, <code>aria-label</code>) trafiają na element.</p>
+  <h4>Właściwości</h4>
+  <table>
+    <tr><th>Właściwość</th><th>Domyślnie</th><th>Opis</th></tr>
+    <tr><td><code>variant</code></td><td><code>line</code></td><td>
+      Wygląd
+      <table>
+        <tr><th>Wartość</th><th>Znaczenie</th></tr>
+        <tr><td><code>solid</code></td><td>Trawertyn, przy najechaniu wypełnienie dębowe. Główna akcja na ciemnym tle</td></tr>
+        <tr><td><code>line</code></td><td>Cienka ramka, wypełnienie trawertynem. Akcje drugorzędne</td></tr>
+        <tr><td><code>glass</code></td><td>Mrożone szkło nad zdjęciem lub filmem (nagłówek, hero)</td></tr>
+      </table>
+    </td></tr>
+    <tr><td><code>icon</code></td><td><code>arrowRight</code></td><td>Ikona w kwadratowej komórce. Strzałki dostają animację przejazdu</td></tr>
+    <tr><td><code>iconFirst</code></td><td><code>false</code></td><td>Komórka ikony po lewej (przyciski „Wróć”)</td></tr>
+    <tr><td><code>compact</code></td><td><code>false</code></td><td>Wysokość 44 px zamiast 56 px</td></tr>
+    <tr><td><code>href</code></td><td></td><td>Zamienia przycisk w link</td></tr>
+  </table>
+  <h4>Przykład</h4>
+<pre>&lt;Button variant="glass" data-dossier-open&gt;{t.cta}&lt;/Button&gt;
+&lt;Button icon="arrowLeft" iconFirst data-dossier-back&gt;{d.back}&lt;/Button&gt;
+&lt;Button icon="arrowRight" aria-label={t.portfolio.next} data-slider-next /&gt;</pre>
+  <p>Przycisk bez treści jest kwadratem (strzałki slidera) i wymaga <code>aria-label</code>. Element z atrybutem
+  <code>data-button-scope</code> (karta) włącza stan najechania przycisku w środku.</p>
+  <p class="note">Bez <code>transform: scale</code> na elementach z ramką: przy ułamkowych pikselach znikała górna krawędź.
+  Wciśnięcie wypełnia przycisk zamiast go zmniejszać.</p>
+</section>
+
+<section id="motion" class="page">
+  <h2>Intro i scrollytelling</h2>
+  <h4>Intro (src/scripts/intro.ts)</h4>
+  <table>
+    <tr><th>Krok</th><th>Czas</th></tr>
+    <tr><td>Linie siatki i znak</td><td>ok. 1,5 s</td></tr>
+    <tr><td>Czekanie na <code>canplay</code> filmu hero</td><td>najwyżej 2,8 s</td></tr>
+    <tr><td>Start filmu, plansza znika, logo powiększa się i rozmywa</td><td>ok. 1,1 s</td></tr>
+    <tr><td>Nagłówek wchodzi z rozmycia</td><td>3,2 s po starcie filmu (0,5 s po pominięciu)</td></tr>
+  </table>
+  <p>Film gra raz i zatrzymuje się na ostatniej klatce, która jest też plakatem hero.</p>
+  <h4>Scrollytelling (src/scripts/scrolly.ts)</h4>
+  <table>
+    <tr><th>Parametr</th><th>Wartość</th><th>Opis</th></tr>
+    <tr><td><code>frameCount</code></td><td>192</td><td>Klatki WebP q48 z <code>videos/intro2.mp4</code></td></tr>
+    <tr><td>Tor</td><td>480svh</td><td>200svh przy ograniczonym ruchu</td></tr>
+    <tr><td><code>scrub</code></td><td>0,5</td><td>Wygładzenie pozycji względem scrolla</td></tr>
+    <tr><td><code>decodeSpan</code></td><td>40 przed, 12 za</td><td>Okno zdekodowanych <code>ImageBitmap</code>, odwrócone przy przewijaniu w górę</td></tr>
+    <tr><td><code>narrative</code></td><td>wejście 12%, wyjście 52%, przejście 10%</td><td>Oś sceny tekstu w ułamkach toru</td></tr>
+    <tr><td>Wersja lekka</td><td>co druga klatka</td><td>Ekrany do 767 px szerokości lub 480 px wysokości, <code>saveData</code>, łącze 2G/3G</td></tr>
+  </table>
+  <h4>Zestawy klatek</h4>
+  <table>
+    <tr><th>Zestaw</th><th>Kiedy</th><th>Rozmiar</th></tr>
+    <tr><td><code>/frames/landscape/</code></td><td>Ekrany szersze niż 4:5</td><td>1280×720, ok. 9,9 MB (192 klatki)</td></tr>
+    <tr><td><code>/frames/portrait/</code></td><td><code>(max-aspect-ratio: 4/5)</code></td><td>608×1080, ok. 6,7 MB, w wersji lekkiej ok. 3,3 MB</td></tr>
+  </table>
+  <p>Canvas ma natywną rozdzielczość klatki, a sąsiednie klatki przenikają się przy ułamkowej pozycji. Klatki zaczynają się pobierać dopiero po intro.</p>
+</section>
+
+<section id="media" class="page">
+  <h2>Skrypty mediów</h2>
+  <p>Wszystkie czytają filmy z <code>videos/</code>, którego nie ma w repo. Kto klonuje projekt, wstawia własne nagrania
+  (1920×1080, 8 s) i dopasowuje nazwy w <code>scripts/clips.mjs</code>, <code>scripts/hero.mjs</code> i <code>scripts/frames.mjs</code>.
+  Gotowe wyniki są w repo, więc sam build ich nie potrzebuje.</p>
+  <table>
+    <tr><th>Skrypt</th><th>Wejście</th><th>Wynik</th></tr>
+    <tr><td><code>npm run hero</code></td><td><code>videos/intro1.mp4</code></td><td><code>public/video/hero-{landscape,portrait}.{mp4,webm}</code>, plakaty z ostatniej klatki w <code>src/assets/hero/</code></td></tr>
+    <tr><td><code>npm run frames</code></td><td><code>videos/intro2.mp4</code></td><td>192 klatki w <code>public/frames/{landscape,portrait}/</code>, <code>src/data/frames.json</code></td></tr>
+    <tr><td><code>npm run previews</code></td><td>filmy z <code>clips.mjs</code></td><td>Podglądy 5 s <code>public/video/&lt;id&gt;.mp4</code>, zdjęcia kart <code>src/assets/properties/&lt;id&gt;.jpg</code></td></tr>
+    <tr><td><code>npm run residences</code></td><td>filmy z <code>clips.mjs</code></td><td>Filmy podstron <code>public/video/residence-&lt;id&gt;.mp4</code> (1600 px, CRF 25), kadry galerii <code>src/assets/residences/&lt;id&gt;-{1,2,3}.jpg</code></td></tr>
+    <tr><td><code>npm run brand</code></td><td><code>logo/logo-enklawa.jpg</code>, <code>videos/intro1.mp4</code></td><td>Logo SVG, <code>favicon.ico</code>, <code>favicon.svg</code>, <code>apple-touch-icon.png</code>, <code>public/og/{pl,en}.jpg</code></td></tr>
+  </table>
+  <h4>Nowa rezydencja krok po kroku</h4>
+  <ol>
+    <li>Wrzuć film do <code>videos/</code> i dopisz go do <code>scripts/clips.mjs</code> (<code>name</code>, <code>source</code>, <code>start</code>).</li>
+    <li>Uruchom <code>npm run previews</code> i <code>npm run residences</code>.</li>
+    <li>Dodaj wpis w <code>src/data/properties.ts</code> (nazwa, lokalizacja, alt, <code>placement</code>, cena).</li>
+    <li>Dodaj opis i alt kadrów w <code>src/data/residences.ts</code>.</li>
+    <li>Dopisz <code>id</code> do listy w <code>tests/e2e/residences.spec.ts</code> i zmień liczbę adresów w teście sitemapy.</li>
+    <li><code>npm run test:e2e</code>.</li>
+  </ol>
+  <p class="note">Po regeneracji mediów sprawdź kopie iCloud: <code>find . -name '* [0-9]*.*' -not -path './node_modules/*'</code>.</p>
+</section>
+
+<section id="tests" class="page">
+  <h2>Testy e2e</h2>
+<pre>npm run test:e2e</pre>
+  <p>Playwright buduje stronę, uruchamia <code>astro preview --ignore-lock</code> na porcie 4332 i przechodzi 30 testów.
+  Flaga <code>--ignore-lock</code> jest potrzebna, bo Astro 7 po wykryciu agenta AI odpala podgląd w tle i Playwright uznaje, że serwer padł.</p>
+  <table>
+    <tr><th>Plik</th><th>Co sprawdza</th></tr>
+    <tr><td><code>home.spec.ts</code></td><td>Intro gra raz, pomijanie przy przejściu z podstrony, klatki na canvas, połowa klatek na telefonie, ograniczony ruch, brak zapisu w przeglądarce, brak poziomego scrolla na telefonie</td></tr>
+    <tr><td><code>portfolio.spec.ts</code></td><td>Przycisk karty otwiera okno z kontekstem, karta prowadzi na podstronę, slider (strzałki i przeciąganie bez nawigacji)</td></tr>
+    <tr><td><code>dossier.spec.ts</code></td><td>Pełna ścieżka formularza z walidacją, zamykanie klawiszem Esc</td></tr>
+    <tr><td><code>residences.spec.ts</code></td><td>Osiem podstron (treść, galeria, alt, canonical, przełącznik języka), film bez pętli, powrót do portfolio bez intro, „Następna rezydencja”, wersja EN, telefon</td></tr>
+    <tr><td><code>seo.spec.ts</code></td><td>Unikalne tytuły i opisy, sitemap (22 adresy), robots, 404, brak słowa „dossier”</td></tr>
+  </table>
+  <p>Projekty: <code>desktop</code> (Chromium 1440×900) i <code>mobile</code> (Pixel 7, tylko testy z tagiem <code>@mobile</code>).
+  Zestaw przeszedł trzykrotne powtórzenie (90/90).</p>
+</section>
+
+<section id="deploy" class="page">
+  <h2>Wdrożenie i braki</h2>
+  <h4>Hosting</h4>
+  <p>Dowolny hosting statyczny (np. Netlify, Vercel, Cloudflare Pages). Polecenie builda <code>npm run build</code>, katalog <code>dist</code>, Node 22.12 lub nowszy.</p>
+  <table>
+    <tr><th>Ustawienie</th><th>Opis</th></tr>
+    <tr><td>Strona 404</td><td>Serwowanie <code>404.html</code> dla nieznanych adresów</td></tr>
+    <tr><td>Nagłówki</td><td>CSP, HSTS, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code>, <code>frame-ancestors</code>, <code>Permissions-Policy</code></td></tr>
+    <tr><td>Cache</td><td>Długi cache dla <code>/_astro/</code>, <code>/frames/</code> i <code>/video/</code></td></tr>
+    <tr><td>Wideo</td><td>Obsługa żądań <code>Range</code> (przewijanie i odtwarzanie od środka)</td></tr>
+  </table>
+  <h4>Do uzupełnienia przed publikacją</h4>
+  <table>
+    <tr><th>Miejsce</th><th>Brak</th></tr>
+    <tr><td><code>src/data/site.ts</code></td><td>Telefon, adres, KRS, NIP, REGON, polisa OC pośrednika, hosting, poczta, retencja logów</td></tr>
+    <tr><td><code>src/data/residences.ts</code></td><td>Powierzchnia i działka każdej rezydencji</td></tr>
+    <tr><td>Formularz</td><td>Endpoint serwerowy zamiast <code>mailto:</code></td></tr>
+    <tr><td>Rezydencje</td><td>Nazwy, lokalizacje i nagrania są przykładowe (generowane). Regulamin nazywa je poglądowymi</td></tr>
+  </table>
+</section>
+
+</main>
+</body>
+</html>

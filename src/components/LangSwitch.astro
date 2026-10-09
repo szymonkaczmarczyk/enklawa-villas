@@ -1,0 +1,63 @@
+---
+import { dictionaries, languages, routes, type Lang, type LocalizedPaths } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  paths: LocalizedPaths | null;
+  class?: string;
+}
+
+const { lang, paths, class: className } = Astro.props;
+const codes = Object.keys(languages) as Lang[];
+---
+
+<ul class:list={['lang', className]} aria-label={dictionaries[lang].header.language}>
+  {
+    codes.map((code) => (
+      <li>
+        <a
+          class="lang__link"
+          href={(paths ?? routes.home)[code]}
+          hreflang={code}
+          lang={code}
+          aria-label={languages[code].name}
+          aria-current={code === lang ? 'page' : undefined}
+        >
+          {languages[code].short}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .lang {
+    display: flex;
+    align-items: center;
+  }
+
+  .lang__link {
+    display: grid;
+    place-items: center;
+    min-width: var(--tap);
+    min-height: var(--tap);
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: var(--tracking-caps);
+    transition: color var(--duration) var(--ease-out);
+  }
+
+  .lang__link[aria-current='page'] {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 6px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .lang__link:hover {
+      color: var(--color-text);
+    }
+  }
+</style>

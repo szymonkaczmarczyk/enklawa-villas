@@ -1,0 +1,101 @@
+---
+import '@fontsource-variable/dm-sans/opsz.css';
+import 'lenis/dist/lenis.css';
+import '../styles/global.css';
+import fontLatin from '@fontsource-variable/dm-sans/files/dm-sans-latin-opsz-normal.woff2?url';
+import DossierDialog from '../components/DossierDialog.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { dictionaries, routes, type Lang, type LocalizedPaths, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  route: RouteKey | null;
+  paths?: LocalizedPaths;
+  image?: { src: string; alt: string };
+  title: string;
+  description: string;
+  noindex?: boolean;
+  intro?: boolean;
+}
+
+const { lang, route, paths, image, title, description, noindex = false, intro = false } = Astro.props;
+const t = dictionaries[lang];
+const absolute = (path: string) => new URL(path, Astro.site).href;
+const localized: LocalizedPaths | null = paths ?? (route ? routes[route] : null);
+const canonical = localized ? absolute(localized[lang]) : null;
+const alternates = localized ? (Object.entries(localized) as [Lang, string][]) : [];
+const ogImage = image ?? { src: `/og/${lang}.jpg`, alt: t.hero.title };
+const ogLocaleAlternate = lang === 'pl' ? dictionaries.en.ogLocale : dictionaries.pl.ogLocale;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {alternates.map(([code, path]) => <link rel="alternate" hreflang={code} href={absolute(path)} />)}
+    {localized && <link rel="alternate" hreflang="x-default" href={absolute(localized.pl)} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Enklawa Villas" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={absolute(ogImage.src)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImage.alt} />
+    <meta property="og:locale" content={t.ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlternate} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#121316" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
+
+    <script is:inline define:vars={{ intro }}>
+      const root = document.documentElement;
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      root.classList.add('js', reduced ? 'reduced' : 'motion');
+      const fromSite = (() => {
+        try {
+          return new URL(document.referrer).origin === location.origin;
+        } catch {
+          return false;
+        }
+      })();
+      if (intro && !reduced && !fromSite && !location.hash) {
+        history.scrollRestoration = 'manual';
+        root.dataset.introMode = 'play';
+        root.classList.add('is-intro');
+        setTimeout(() => root.classList.remove('is-intro'), 7000);
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">{t.skipLink}</a>
+    <Header lang={lang} paths={localized} />
+    <main id="content" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <DossierDialog lang={lang} />
+    <script>
+      import '../scripts/app';
+    </script>
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

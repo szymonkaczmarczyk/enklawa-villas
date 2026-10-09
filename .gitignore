@@ -1,0 +1,41 @@
+node_modules/
+dist/
+.astro/
+npm-debug.log*
+.vercel/
+.netlify/
+test-results/
+playwright-report/
+.playwright-mcp/
+
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+.DS_Store
+* 2.*
+* 2/
+* 3.*
+* 3/
+
+videos/
+photos/
+logo/
+favicon/
+
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+MASTER.md
+**/MASTER.md
+design-system/
+.claude/
+.cursor/
+.codex/
+.windsurf/
+.github/copilot-instructions.md
+.mcp.json
+claude_desktop_config.json

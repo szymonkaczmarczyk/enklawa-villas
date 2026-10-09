@@ -1,0 +1,149 @@
+---
+import { site } from '../data/site';
+import { routes } from '../i18n';
+import Legal from '../layouts/Legal.astro';
+
+const { company } = site;
+const summary = [
+  `Administratorem danych jest ${company.name}`,
+  'Strona nie zapisuje plików cookies i nie korzysta z narzędzi analitycznych ani reklamowych.',
+  'Formularz zapytania nie wysyła danych na nasz serwer. Przygotowuje wiadomość, którą wysyłasz ze swojego programu pocztowego.',
+  'Przed udostępnieniem szczegółów oferty weryfikujemy tożsamość, bo wymagają tego przepisy o przeciwdziałaniu praniu pieniędzy.',
+  'Masz prawo dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, sprzeciwu i skargi do Prezesa UODO.',
+];
+---
+
+<Legal lang="pl" route="privacy" title="Polityka prywatności" summary={summary}>
+  <section>
+    <h2>Administrator danych</h2>
+    <p>
+      Administratorem danych osobowych jest <strong>{company.name}</strong> z siedzibą pod adresem {company.address},
+      wpisana do rejestru przedsiębiorców Krajowego Rejestru Sądowego pod numerem KRS {company.krs}, NIP {company.nip},
+      REGON {company.regon}, kapitał zakładowy {company.capital.pl} (dalej: „Administrator”).
+    </p>
+    <p>
+      W sprawach dotyczących danych osobowych możesz pisać na adres{' '}
+      <a href={`mailto:${site.email}`}>{site.email}</a>{' '}albo listownie na adres siedziby.
+    </p>
+  </section>
+
+  <section>
+    <h2>Jakie dane przetwarzamy</h2>
+    <ul>
+      <li>
+        <strong>Dane z zapytania:</strong> imię i nazwisko, numer telefonu lub adres e-mail, treść wiadomości oraz adres
+        e-mail, z którego ją wysyłasz. Formularz na stronie nie przesyła danych na nasz serwer. Przygotowuje gotową wiadomość,
+        którą wysyłasz samodzielnie ze swojego programu pocztowego.
+      </li>
+      <li>
+        <strong>Dane z weryfikacji tożsamości:</strong> dane z dokumentu tożsamości i inne informacje wymagane przez ustawę
+        z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu, zbierane przed
+        udostępnieniem szczegółów oferty lub zawarciem umowy pośrednictwa.
+      </li>
+      <li>
+        <strong>Dane techniczne:</strong> adres IP, data i godzina wizyty oraz typ przeglądarki, zapisywane automatycznie
+        w logach serwera przez dostawcę hostingu.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Cele i podstawy prawne</h2>
+    <ul>
+      <li>
+        Odpowiedź na zapytanie i kontakt przed zawarciem umowy: art. 6 ust. 1 lit. b RODO (działania na Twoje żądanie
+        przed zawarciem umowy) oraz art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes Administratora, jakim jest
+        prowadzenie korespondencji).
+      </li>
+      <li>
+        Weryfikacja tożsamości i stosowanie środków bezpieczeństwa finansowego: art. 6 ust. 1 lit. c RODO w związku
+        z ustawą o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu. Pośrednik w obrocie nieruchomościami jest
+        instytucją obowiązaną w rozumieniu tej ustawy.
+      </li>
+      <li>Wykonanie umowy pośrednictwa w obrocie nieruchomościami: art. 6 ust. 1 lit. b RODO.</li>
+      <li>Ustalenie, dochodzenie lub obrona roszczeń: art. 6 ust. 1 lit. f RODO.</li>
+      <li>Bezpieczeństwo i prawidłowe działanie strony (logi serwera): art. 6 ust. 1 lit. f RODO.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Okres przechowywania</h2>
+    <ul>
+      <li>
+        Korespondencja dotycząca zapytania: do czasu jego obsłużenia, a następnie do upływu okresu przedawnienia
+        ewentualnych roszczeń.
+      </li>
+      <li>
+        Dokumentacja z weryfikacji tożsamości: 5 lat, licząc od pierwszego dnia roku następującego po roku, w którym
+        zakończono stosunki gospodarcze lub przeprowadzono transakcję okazjonalną (art. 49 ustawy o przeciwdziałaniu praniu
+        pieniędzy oraz finansowaniu terroryzmu).
+      </li>
+      <li>Dane z umowy pośrednictwa: przez czas jej wykonywania i do upływu okresu przedawnienia roszczeń.</li>
+      <li>Logi serwera: {company.logRetention}.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Odbiorcy danych</h2>
+    <ul>
+      <li>Dostawca hostingu strony: {company.hosting}.</li>
+      <li>Dostawca poczty elektronicznej: {company.mailbox}.</li>
+      <li>Kancelarie prawne i notariusze, w zakresie niezbędnym do przeprowadzenia transakcji.</li>
+      <li>
+        Organy publiczne, gdy obowiązek przekazania danych wynika z przepisów, w tym Generalny Inspektor Informacji
+        Finansowej.
+      </li>
+    </ul>
+    <p>
+      Nie przekazujemy danych poza Europejski Obszar Gospodarczy. Jeśli dostawca usług przetwarza je poza EOG, odbywa się to
+      na podstawie decyzji Komisji Europejskiej stwierdzającej odpowiedni stopień ochrony albo standardowych klauzul umownych.
+    </p>
+  </section>
+
+  <section>
+    <h2>Twoje prawa</h2>
+    <ul>
+      <li>dostęp do danych i otrzymanie ich kopii (art. 15 RODO),</li>
+      <li>sprostowanie danych (art. 16 RODO),</li>
+      <li>usunięcie danych (art. 17 RODO),</li>
+      <li>ograniczenie przetwarzania (art. 18 RODO),</li>
+      <li>przenoszenie danych przetwarzanych na podstawie umowy (art. 20 RODO),</li>
+      <li>sprzeciw wobec przetwarzania opartego na prawnie uzasadnionym interesie (art. 21 RODO),</li>
+      <li>skarga do Prezesa Urzędu Ochrony Danych Osobowych, ul. Stawki 2, 00-193 Warszawa.</li>
+    </ul>
+    <p>
+      Prawo do usunięcia danych nie obejmuje dokumentacji, którą musimy przechowywać na podstawie przepisów
+      o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu.
+    </p>
+  </section>
+
+  <section>
+    <h2>Dobrowolność podania danych</h2>
+    <p>
+      Podanie danych w zapytaniu jest dobrowolne, ale bez nich nie odpowiemy na wiadomość. Podanie danych do weryfikacji
+      tożsamości jest warunkiem udostępnienia szczegółów oferty i zawarcia umowy, bo wymagają tego przepisy.
+    </p>
+  </section>
+
+  <section>
+    <h2>Pliki cookies i narzędzia zewnętrzne</h2>
+    <p>
+      Strona nie zapisuje plików cookies, nie korzysta z narzędzi analitycznych ani reklamowych i nie ładuje zasobów
+      z serwerów zewnętrznych. Kroje pisma są hostowane razem ze stroną. Jeśli to się zmieni, zaktualizujemy tę politykę
+      i poprosimy o zgodę tam, gdzie wymagają tego przepisy.
+    </p>
+  </section>
+
+  <section>
+    <h2>Zautomatyzowane decyzje</h2>
+    <p>Nie podejmujemy decyzji opartych wyłącznie na zautomatyzowanym przetwarzaniu danych, w tym na profilowaniu.</p>
+  </section>
+
+  <section>
+    <h2>Zmiany polityki</h2>
+    <p>
+      Aktualna wersja polityki jest zawsze dostępna na tej stronie. Zasady korzystania ze strony opisuje{' '}
+      <a href={routes.terms.pl}>regulamin</a>.
+    </p>
+  </section>
+</Legal>

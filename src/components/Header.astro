@@ -1,0 +1,258 @@
+---
+import { dictionaries, routes, type Lang, type LocalizedPaths } from '../i18n';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
+import Logo from './Logo.astro';
+
+interface Props {
+  lang: Lang;
+  paths: LocalizedPaths | null;
+}
+
+const { lang, paths } = Astro.props;
+const t = dictionaries[lang];
+const home = routes.home[lang];
+const links = [
+  { href: `${home}#${t.anchors.standard}`, label: t.header.links.standard },
+  { href: `${home}#${t.anchors.residences}`, label: t.header.links.residences },
+  { href: `${home}#${t.anchors.contact}`, label: t.header.links.contact },
+];
+---
+
+<header class="header">
+  <div class="header__bar container">
+    <a class="header__logo" href={home} aria-label={t.header.home}>
+      <Logo variant="horizontal" />
+    </a>
+
+    <nav class="header__nav" aria-label={t.header.nav}>
+      <ul>
+        {
+          links.map((link) => (
+            <li>
+              <a class="header__link link" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <LangSwitch lang={lang} paths={paths} class="header__lang" />
+      <Button variant="glass" compact class="header__cta" data-dossier-open>{t.cta}</Button>
+      <button
+        class="header__menu-button"
+        type="button"
+        aria-label={t.header.menu}
+        aria-haspopup="dialog"
+        aria-controls="menu"
+        data-menu-open
+      >
+        <Icon name="list" size={24} />
+        <span aria-hidden="true">{t.header.menu}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog class="menu" id="menu" aria-label={t.header.nav} data-menu data-lenis-prevent>
+  <div class="menu__bar container">
+    <button class="menu__close" type="button" data-menu-close>
+      <Icon name="close" size={24} />
+      <span>{t.header.close}</span>
+    </button>
+    <LangSwitch lang={lang} paths={paths} />
+  </div>
+  <nav class="menu__nav container" aria-label={t.header.nav}>
+    <ul>
+      {
+        links.map((link) => (
+          <li>
+            <a class="menu__link t-h2" href={link.href} data-menu-link>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <div class="menu__footer container">
+    <Button variant="solid" class="menu__cta" data-dossier-open>{t.cta}</Button>
+  </div>
+</dialog>
+
+<style>
+  .header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-header);
+    padding-top: env(safe-area-inset-top, 0px);
+    border-bottom: 1px solid var(--color-line);
+    background: transparent;
+    -webkit-backdrop-filter: blur(16px) saturate(140%) brightness(0.7);
+    backdrop-filter: blur(16px) saturate(140%) brightness(0.7);
+  }
+
+  .header__bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    height: var(--header-height);
+  }
+
+  .header__logo {
+    display: flex;
+    align-items: center;
+    justify-self: start;
+    min-height: var(--tap);
+  }
+
+  .header__logo :global(.logo) {
+    height: 34px;
+  }
+
+  .header__nav {
+    display: none;
+  }
+
+  .header__nav ul {
+    display: flex;
+    gap: var(--space-6);
+  }
+
+  .header__link {
+    padding-block: var(--space-2);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
+
+  .header__cta {
+    display: none;
+  }
+
+  .header__menu-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: var(--tap);
+    min-height: var(--tap);
+    padding-inline: var(--space-2);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .header__menu-button span {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .header__logo :global(.logo) {
+      height: 40px;
+    }
+
+    .header__cta {
+      display: inline-flex;
+    }
+
+    .header__menu-button span {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .header__bar {
+      grid-template-columns: 1fr auto 1fr;
+    }
+
+    .header__nav {
+      display: block;
+    }
+
+    .header__menu-button {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .header {
+      background: var(--color-bg);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+    border: 0;
+    background: rgb(18 19 22 / 0.94);
+    color: var(--color-text);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+
+  .menu[open] {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .menu::backdrop {
+    background: transparent;
+  }
+
+  .menu__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .menu__close {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding-inline: var(--space-1) var(--space-2);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .menu__nav {
+    align-self: center;
+  }
+
+  .menu__nav ul {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .menu__link {
+    display: block;
+    padding-block: var(--space-2);
+    font-weight: 600;
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .menu__footer {
+    padding-block: var(--space-6);
+  }
+
+  .menu__cta {
+    width: 100%;
+  }
+</style>

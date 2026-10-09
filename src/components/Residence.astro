@@ -1,0 +1,460 @@
+---
+import { Picture } from 'astro:assets';
+import type { Property } from '../data/properties';
+import type { Residence } from '../data/residences';
+import { bindShortWords, dictionaries, formatPrice, residencePaths, routes, type Lang } from '../i18n';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+  property: Property;
+  residence: Residence;
+  next: Property;
+}
+
+const { lang, property, residence, next } = Astro.props;
+const t = dictionaries[lang];
+const r = t.residence;
+const name = property.name[lang];
+const location = property.location[lang];
+const context = `${name}, ${location}`;
+const squareMetres = (value: number | null) =>
+  value === null ? r.missing : `${new Intl.NumberFormat(t.numberLocale).format(value)} m²`;
+const facts = [
+  { label: r.location, value: location },
+  { label: r.area, value: squareMetres(residence.area) },
+  { label: r.plot, value: squareMetres(residence.plot) },
+  {
+    label: r.price,
+    value: property.transactionPrice ? formatPrice(property.transactionPrice, lang) : t.portfolio.priceOnRequest,
+  },
+];
+const paragraphs = residence.description[lang];
+const [lead, ...rest] = lang === 'pl' ? bindShortWords(paragraphs) : paragraphs;
+const [wide, left, right] = residence.gallery;
+---
+
+<article class="residence" aria-labelledby="residence-title">
+  <header class="residence__hero">
+    <div class="residence__media">
+      <Picture
+        src={property.image}
+        alt={property.alt[lang]}
+        formats={['avif', 'webp']}
+        widths={[640, 1280, property.image.width]}
+        sizes="100vw"
+        quality={72}
+        loading="eager"
+        fetchpriority="high"
+        class="residence__poster"
+        style={`object-position: ${property.focus}`}
+      />
+      <video
+        class="residence__film"
+        muted
+        playsinline
+        preload="none"
+        disablepictureinpicture
+        aria-hidden="true"
+        tabindex="-1"
+        style={`object-position: ${property.focus}`}
+        data-src={residence.film}
+        data-residence-film
+      ></video>
+      <div class="residence__shade" aria-hidden="true"></div>
+    </div>
+
+    <div class="residence__top container">
+      <a class="residence__back" href={`${routes.home[lang]}#${t.anchors.residences}`}>
+        <Icon name="arrowLeft" size={20} />
+        <span class="link">{r.back}</span>
+      </a>
+    </div>
+
+    <div class="residence__intro container">
+      <p class="residence__location t-caps">
+        <Icon name="mapPin" size={16} />
+        {location}
+      </p>
+      <h1 class="residence__title t-h1" id="residence-title">{name}</h1>
+      <div class="residence__actions">
+        <Button variant="glass" data-dossier-open="buy" data-dossier-context={context}>{t.portfolio.ask}</Button>
+        <p class="residence__price">
+          {
+            property.transactionPrice ? (
+              <>
+                {t.portfolio.transactionPrice}: <strong>{formatPrice(property.transactionPrice, lang)}</strong>
+              </>
+            ) : (
+              t.portfolio.priceOnRequest
+            )
+          }
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <section class="residence__about container" aria-labelledby="residence-facts">
+    <div class="residence__story">
+      <p class="residence__lead t-h3" data-reveal>{lead}</p>
+      {rest.map((paragraph) => <p class="t-lead muted" data-reveal>{paragraph}</p>)}
+    </div>
+    <div class="residence__facts" data-reveal>
+      <h2 class="residence__facts-title t-caps" id="residence-facts">{r.facts}</h2>
+      <dl>
+        {
+          facts.map((fact) => (
+            <div class="residence__fact">
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="residence__gallery container" aria-label={r.gallery}>
+    <figure class="residence__figure residence__figure--wide" data-reveal>
+      <Picture src={wide.image} alt={wide.alt[lang]} formats={['avif', 'webp']} widths={[640, 1280, 1920]} sizes="(min-width: 1440px) 1312px, 92vw" quality={70} />
+    </figure>
+    <figure class="residence__figure residence__figure--left" data-reveal>
+      <Picture src={left.image} alt={left.alt[lang]} formats={['avif', 'webp']} widths={[640, 1280]} sizes="(min-width: 768px) 56vw, 92vw" quality={70} />
+    </figure>
+    <figure class="residence__figure residence__figure--right" data-reveal>
+      <Picture src={right.image} alt={right.alt[lang]} formats={['avif', 'webp']} widths={[480, 960]} sizes="(min-width: 768px) 36vw, 92vw" quality={70} />
+    </figure>
+  </section>
+
+  <section class="residence__closing container" aria-labelledby="residence-closing">
+    <h2 class="t-h2" id="residence-closing" data-reveal>{r.closingTitle}</h2>
+    <p class="t-lead muted" data-reveal>{r.closingText}</p>
+    <div data-reveal>
+      <Button variant="solid" data-dossier-open="buy" data-dossier-context={context}>{t.cta}</Button>
+    </div>
+  </section>
+
+  <nav class="residence__next container" aria-label={r.next}>
+    <a class="next" href={residencePaths(next.id)[lang]}>
+      <span class="next__media">
+        <Picture src={next.image} alt="" formats={['avif', 'webp']} widths={[480, 960]} sizes="(min-width: 768px) 40vw, 92vw" quality={65} class="next__image" style={`object-position: ${next.focus}`} />
+      </span>
+      <span class="next__text">
+        <span class="next__label t-caps">{r.next}</span>
+        <span class="next__name t-h3">{next.name[lang]}</span>
+        <span class="next__location muted">{next.location[lang]}</span>
+      </span>
+      <Icon name="arrowRight" size={28} class="next__arrow" />
+    </a>
+  </nav>
+</article>
+
+<script>
+  import { initResidenceFilm } from '../scripts/residence';
+
+  initResidenceFilm();
+</script>
+
+<style>
+  .residence__hero {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100svh;
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  .residence__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .residence__media :global(picture),
+  .residence__media :global(.residence__poster),
+  .residence__film {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .residence__film {
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out);
+  }
+
+  .residence__film.is-playing {
+    opacity: 1;
+  }
+
+  .residence__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgb(18 19 22 / 0.72) 0, rgb(18 19 22 / 0) 26%),
+      linear-gradient(to right, rgb(18 19 22 / 0.6) 0, rgb(18 19 22 / 0) 60%),
+      linear-gradient(to top, var(--color-bg) 0, rgb(18 19 22 / 0.5) 28%, rgb(18 19 22 / 0) 60%);
+  }
+
+  .residence__top {
+    padding-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + var(--space-4));
+  }
+
+  .residence__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .residence__intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: var(--space-5);
+    padding-bottom: max(var(--space-8), calc(env(safe-area-inset-bottom, 0px) + var(--space-7)));
+  }
+
+  .residence__intro > * {
+    animation: residence-rise 1.2s var(--ease-out) both;
+  }
+
+  .residence__intro > :nth-child(2) {
+    animation-delay: 120ms;
+  }
+
+  .residence__intro > :nth-child(3) {
+    animation-delay: 240ms;
+  }
+
+  @keyframes residence-rise {
+    from {
+      opacity: 0;
+      filter: blur(8px);
+      transform: translateY(16px);
+    }
+  }
+
+  .residence__location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-accent);
+  }
+
+  .residence__title {
+    max-width: 12em;
+  }
+
+  .residence__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+  }
+
+  .residence__price {
+    color: var(--color-text-muted);
+  }
+
+  .residence__price strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .residence__about {
+    display: grid;
+    gap: var(--space-8);
+    padding-block: var(--space-9);
+  }
+
+  .residence__story {
+    display: grid;
+    align-content: start;
+    gap: var(--space-5);
+    max-width: var(--measure);
+  }
+
+  .residence__lead {
+    font-weight: 500;
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .residence__facts {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+  }
+
+  .residence__facts-title {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  .residence__fact {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) 2fr;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .residence__fact:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .residence__fact dt {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .residence__fact dd {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .residence__gallery {
+    display: grid;
+    gap: var(--space-5);
+    padding-bottom: var(--space-10);
+  }
+
+  .residence__figure {
+    margin: 0;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .residence__figure :global(picture),
+  .residence__figure :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .residence__figure--wide {
+    aspect-ratio: 16 / 9;
+  }
+
+  .residence__figure--left {
+    aspect-ratio: 4 / 3;
+  }
+
+  .residence__figure--right {
+    aspect-ratio: 4 / 5;
+  }
+
+  .residence__closing {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-5);
+    padding-block: var(--space-9);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .residence__closing p {
+    max-width: 52ch;
+  }
+
+  .residence__next {
+    padding-bottom: var(--space-10);
+  }
+
+  .next {
+    display: grid;
+    gap: var(--space-5);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .next__media {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface);
+  }
+
+  .next__media :global(picture),
+  .next__media :global(.next__image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  .next__text {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .next__label {
+    color: var(--color-accent);
+  }
+
+  .next__name {
+    font-weight: 600;
+  }
+
+  .next :global(.next__arrow) {
+    justify-self: end;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .next:hover :global(.next__image) {
+      transform: scale(1.03);
+    }
+
+    .next:hover :global(.next__arrow) {
+      animation: travel 620ms var(--ease-out);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .residence__about {
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--space-6);
+      padding-block: var(--space-10);
+    }
+
+    .residence__story {
+      grid-column: 1 / 8;
+    }
+
+    .residence__facts {
+      grid-column: 9 / -1;
+    }
+
+    .residence__gallery {
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--space-6) var(--space-5);
+    }
+
+    .residence__figure--wide {
+      grid-column: 1 / -1;
+      aspect-ratio: 21 / 9;
+    }
+
+    .residence__figure--left {
+      grid-column: 1 / 8;
+    }
+
+    .residence__figure--right {
+      grid-column: 9 / -1;
+      margin-top: var(--space-9);
+    }
+
+    .next {
+      grid-template-columns: 5fr 6fr auto;
+      align-items: center;
+      gap: var(--space-7);
+    }
+  }
+</style>

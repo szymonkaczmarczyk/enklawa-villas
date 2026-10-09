@@ -1,0 +1,152 @@
+---
+import frames from '../data/frames.json';
+import { dictionaries, type Lang } from '../i18n';
+import Standard from './Standard.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const firstFrame = (set: 'landscape' | 'portrait') => `${frames.path}/${set}/0001.webp`;
+---
+
+<section class="scrolly" aria-label={t.scrolly.label} data-scrolly data-frame-count={frames.count} data-frame-path={frames.path}>
+  <div class="scrolly__stage">
+    <picture class="scrolly__poster">
+      <source media="(max-aspect-ratio: 4/5)" srcset={firstFrame('portrait')} type="image/webp" />
+      <img src={firstFrame('landscape')} alt={t.scrolly.posterAlt} width="1280" height="720" loading="lazy" decoding="async" />
+    </picture>
+    <canvas class="scrolly__canvas" aria-hidden="true" data-canvas></canvas>
+    <div class="scrolly__shade" aria-hidden="true"></div>
+
+    <div class="beat" data-beat>
+      <div class="beat__inner container">
+        <div class="beat__block">
+          <h2 class="t-h2">{t.scrolly.title}</h2>
+          <p class="t-lead">{t.scrolly.text}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrolly__track" aria-hidden="true" data-track></div>
+
+  <Standard lang={lang} />
+</section>
+
+<style>
+  .scrolly {
+    position: relative;
+  }
+
+  .scrolly__stage {
+    position: relative;
+    display: grid;
+    min-height: 100svh;
+    overflow: clip;
+    isolation: isolate;
+  }
+
+  .scrolly__poster,
+  .scrolly__canvas,
+  .scrolly__shade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .scrolly__poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .scrolly__canvas {
+    z-index: 1;
+  }
+
+  .scrolly__shade {
+    z-index: 2;
+    background:
+      linear-gradient(to bottom, rgb(18 19 22 / 0.85) 0, rgb(18 19 22 / 0.4) 12%, rgb(18 19 22 / 0) 28%),
+      linear-gradient(to top, rgb(18 19 22 / 0.9) 0, rgb(18 19 22 / 0.3) 34%, rgb(18 19 22 / 0) 60%);
+  }
+
+  .beat {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    min-height: 100svh;
+  }
+
+  .beat::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse 70% 80% at 78% 55%, rgb(18 19 22 / 0.84) 0, rgb(18 19 22 / 0.4) 45%, rgb(18 19 22 / 0) 72%);
+  }
+
+  .beat__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    padding-block: var(--header-height) var(--space-8);
+  }
+
+  .beat__block {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 36rem;
+  }
+
+  .beat__block p {
+    max-width: 30ch;
+    text-wrap: balance;
+  }
+
+  .scrolly__track {
+    display: none;
+  }
+
+  :global(.js) .scrolly__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 0;
+  }
+
+  :global(.js) .beat {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.js) .scrolly__track {
+    display: block;
+    height: 480svh;
+  }
+
+  :global(.reduced) .scrolly__track {
+    height: 200svh;
+  }
+
+  @media (max-width: 767px) {
+    .beat::before {
+      background: linear-gradient(to top, rgb(18 19 22 / 0.86) 0, rgb(18 19 22 / 0.4) 42%, rgb(18 19 22 / 0) 70%);
+    }
+
+    .beat__inner {
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding-bottom: max(var(--space-9), calc(env(safe-area-inset-bottom, 0px) + var(--space-7)));
+    }
+  }
+</style>

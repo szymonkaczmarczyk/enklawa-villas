@@ -1,0 +1,129 @@
+---
+import { site } from '../../data/site';
+import { routes } from '../../i18n';
+import Legal from '../../layouts/Legal.astro';
+
+const { company } = site;
+const summary = [
+  'The website is for information only. The properties shown are not an offer within the meaning of the Polish Civil Code.',
+  'Using the website is free of charge and does not require an account.',
+  'Full property details are shared after identity verification and a separate agreement.',
+  `We handle complaints within 14 days. A message to ${site.email} is enough.`,
+];
+---
+
+<Legal lang="en" route="terms" title="Website terms" summary={summary}>
+  <section>
+    <h2>General provisions</h2>
+    <ol>
+      <li>
+        These terms set out the rules for using the website {site.domain} (the “Website”). They constitute the terms referred
+        to in Article 8 of the Polish Act of 18 July 2002 on providing services by electronic means.
+      </li>
+      <li>
+        The service provider is <strong>{company.name}</strong>, registered office at {company.address}, KRS {company.krs},
+        NIP {company.nip}, REGON {company.regon}, share capital {company.capital.en}, email{' '}
+        <a href={`mailto:${site.email}`}>{site.email}</a>{' '}(the “Provider”).
+      </li>
+      <li>
+        The Provider operates as a real estate broker and holds the mandatory civil liability insurance referred to in
+        Article 181 of the Polish Act of 21 August 1997 on real estate management: {company.insurance}.
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Services provided through the Website</h2>
+    <ol>
+      <li>
+        The Provider offers two services free of charge: access to informational content and preparation of an enquiry that
+        the user sends from their own email app.
+      </li>
+      <li>
+        The agreement for access to content is concluded when the Website is opened and terminates when the user leaves it.
+        The agreement for preparing an enquiry is concluded when the form is opened and terminates when it is closed.
+      </li>
+      <li>
+        Detailed property information is shared after identity verification carried out in
+        accordance with the Polish Act of 1 March 2018 on counteracting money laundering and terrorist financing and after a
+        separate agreement is signed, such as a brokerage agreement or a non-disclosure agreement.
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Technical requirements</h2>
+    <p>
+      Using the Website requires a device with internet access and an up-to-date web browser. Animations and the enquiry
+      form require JavaScript, and sending an enquiry requires a configured email app.
+    </p>
+  </section>
+
+  <section>
+    <h2>Rules of use</h2>
+    <ol>
+      <li>Users must not provide unlawful content.</li>
+      <li>Actions that disrupt the Website or load it beyond normal use are prohibited.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Nature of property information</h2>
+    <ol>
+      <li>
+        Property information presented on the Website is not an offer within the meaning of Article 66 of the Polish Civil
+        Code. It is an invitation to enter into negotiations within the meaning of Article 71 of the Polish Civil Code.
+      </li>
+      <li>Photographs and visualisations are illustrative.</li>
+      <li>The binding terms of a transaction are set only by an agreement concluded in the form required by law.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Intellectual property</h2>
+    <p>
+      The content, photographs, visualisations, logo and visual layout of the Website are protected by copyright. Copying
+      or distributing them without the Provider’s consent is prohibited, except for permitted use under the law.
+    </p>
+  </section>
+
+  <section>
+    <h2>Complaints</h2>
+    <ol>
+      <li>
+        Complaints about the operation of the Website can be sent to{' '}
+        <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </li>
+      <li>A complaint should describe the problem and include the contact details of the person submitting it.</li>
+      <li>The Provider handles complaints within 14 days of receipt and replies to the address they were sent from.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Personal data</h2>
+    <p>
+      The rules for processing personal data are set out in the{' '}
+      <a href={routes.privacy.en}>privacy policy</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Final provisions</h2>
+    <ol>
+      <li>
+        Matters not covered by these terms are governed by Polish law, in particular the Civil Code and the Act on providing
+        services by electronic means.
+      </li>
+      <li>
+        Consumers may use out-of-court complaint and redress procedures, including assistance from a municipal or district
+        consumer ombudsman.
+      </li>
+      <li>
+        The Provider may amend these terms for important reasons, such as changes in the law or in the scope of services.
+        Amendments take effect on the day they are published on the Website and do not affect rights acquired before that
+        date.
+      </li>
+      <li>These terms apply from {site.legalUpdated.en}.</li>
+    </ol>
+  </section>
+</Legal>

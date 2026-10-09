@@ -1,0 +1,161 @@
+---
+import { phoneHref, site } from '../data/site';
+import { dictionaries, routes, type Lang } from '../i18n';
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const { company } = site;
+---
+
+<footer class="footer">
+  <div class="footer__grid container">
+    <a class="footer__logo" href={routes.home[lang]} aria-label={t.header.home}>
+      <Logo variant="stacked" />
+    </a>
+
+    <section class="footer__block" aria-labelledby="footer-contact">
+      <h2 class="footer__title t-caps" id="footer-contact">{t.footer.contactTitle}</h2>
+      <ul class="footer__list">
+        <li>
+          <a class="footer__contact" href={`mailto:${site.email}`}>
+            <Icon name="envelope" size={20} />
+            <span class="link">{site.email}</span>
+          </a>
+        </li>
+        <li>
+          {
+            phoneHref ? (
+              <a class="footer__contact" href={phoneHref}>
+                <Icon name="phone" size={20} />
+                <span class="link">{site.phone}</span>
+              </a>
+            ) : (
+              <span class="footer__contact">
+                <Icon name="phone" size={20} />
+                <span>{site.phone}</span>
+              </span>
+            )
+          }
+          <span class="footer__note">{t.footer.concierge}</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="footer__block" aria-labelledby="footer-company">
+      <h2 class="footer__title t-caps" id="footer-company">{t.footer.companyTitle}</h2>
+      <p class="footer__text">{t.footer.companyIntro}</p>
+      <p class="footer__company" translate="no">{company.name}</p>
+      <p class="footer__text">KRS: {company.krs} | NIP: {company.nip} | REGON: {company.regon}</p>
+      <p class="footer__text">{t.footer.capital}: {company.capital[lang]}</p>
+    </section>
+
+    <section class="footer__block" aria-labelledby="footer-legal">
+      <h2 class="footer__title t-caps" id="footer-legal">{t.footer.legalTitle}</h2>
+      <ul class="footer__list">
+        <li><a class="footer__link link" href={routes.privacy[lang]}>{t.footer.privacy}</a></li>
+        <li><a class="footer__link link" href={routes.terms[lang]}>{t.footer.terms}</a></li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="footer__bottom container">
+    <p>© {site.year} <span translate="no">{site.name}</span>. {t.footer.rights} {t.footer.dossierNote}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    z-index: var(--z-content);
+    padding-top: var(--space-9);
+    padding-bottom: max(var(--space-6), env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--color-line);
+    background: var(--color-bg);
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .footer__logo {
+    justify-self: start;
+  }
+
+  .footer__logo :global(.logo) {
+    height: 104px;
+  }
+
+  .footer__block {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+  }
+
+  .footer__title {
+    margin-bottom: var(--space-2);
+    color: var(--color-accent);
+  }
+
+  .footer__list {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .footer__contact {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--tap);
+    font-size: var(--fs-body-lg);
+  }
+
+  .footer__note {
+    display: block;
+    padding-left: calc(20px + var(--space-3));
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .footer__company {
+    font-weight: 600;
+  }
+
+  .footer__text {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .footer__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+
+  .footer__bottom {
+    margin-top: var(--space-9);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-line);
+    color: var(--color-text-subtle);
+    font-size: var(--fs-micro);
+  }
+
+  @media (min-width: 768px) {
+    .footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .footer__grid {
+      grid-template-columns: 3fr 3fr 4fr 2fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

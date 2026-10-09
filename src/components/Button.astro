@@ -1,0 +1,44 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props extends Omit<HTMLAttributes<'button'>, 'class'> {
+  href?: string;
+  variant?: 'solid' | 'line' | 'glass';
+  icon?: IconName;
+  iconFirst?: boolean;
+  compact?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'line',
+  icon = 'arrowRight',
+  iconFirst = false,
+  compact = false,
+  class: className,
+  type = 'button',
+  ...attributes
+} = Astro.props;
+const Tag = href ? 'a' : 'button';
+const hasLabel = Astro.slots.has('default');
+const travels = icon === 'arrowRight' || icon === 'arrowLeft';
+---
+
+<Tag
+  class:list={[
+    'button',
+    `button--${variant}`,
+    { 'button--compact': compact, 'button--reverse': iconFirst, 'button--square': !hasLabel },
+    className,
+  ]}
+  href={href}
+  type={href ? undefined : type}
+  {...attributes}
+>
+  {hasLabel && <span class="button__label"><slot /></span>}
+  <span class="button__icon" data-travel={travels ? '' : undefined}>
+    <Icon name={icon} size={compact ? 18 : 20} />
+  </span>
+</Tag>

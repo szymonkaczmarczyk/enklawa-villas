@@ -1,0 +1,133 @@
+---
+import { properties } from '../data/properties';
+import { dictionaries, type Lang } from '../i18n';
+import Button from './Button.astro';
+import PropertyCard from './PropertyCard.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const featured = properties.filter((property) => property.placement !== 'more');
+const more = properties.filter((property) => property.placement === 'more');
+---
+
+<section class="portfolio" id={t.anchors.residences} aria-labelledby="portfolio-title">
+  <div class="container">
+    <header class="portfolio__header">
+      <h2 class="t-h2" id="portfolio-title" data-reveal>{t.portfolio.title}</h2>
+      <p class="t-lead muted" data-reveal>{t.portfolio.lead}</p>
+    </header>
+
+    <div class="portfolio__grid">
+      {featured.map((property) => <PropertyCard property={property} lang={lang} level={3} />)}
+    </div>
+
+    <div class="more" data-slider>
+      <div class="more__header">
+        <h3 class="more__title t-h3" id="more-title" data-reveal>{t.portfolio.more}</h3>
+        <div class="more__controls">
+          <Button icon="arrowLeft" iconFirst aria-label={t.portfolio.previous} aria-controls="more-track" data-slider-previous />
+          <Button icon="arrowRight" aria-label={t.portfolio.next} aria-controls="more-track" data-slider-next />
+        </div>
+      </div>
+      <ul class="more__track" id="more-track" role="list" aria-labelledby="more-title" data-slider-track>
+        {
+          more.map((property) => (
+            <li class="more__item">
+              <PropertyCard property={property} lang={lang} level={4} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .portfolio {
+    position: relative;
+    z-index: var(--z-content);
+    padding-block: var(--space-10) var(--space-11);
+    overflow-x: clip;
+    background: var(--color-bg);
+  }
+
+  .portfolio__header {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 46rem;
+    margin-bottom: var(--space-8);
+  }
+
+  .portfolio__grid {
+    display: grid;
+    gap: var(--space-9) var(--space-5);
+  }
+
+  .more {
+    margin-top: var(--space-10);
+  }
+
+  .more__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-5);
+    margin-bottom: var(--space-6);
+  }
+
+  .more__controls {
+    display: flex;
+    flex: none;
+    gap: var(--space-2);
+  }
+
+  .more__track {
+    display: grid;
+    grid-auto-columns: min(78vw, 420px);
+    grid-auto-flow: column;
+    gap: var(--space-5);
+    margin: 0 calc(-1 * var(--gutter)) 0 calc(-1 * var(--space-2));
+    padding: var(--space-2) var(--gutter) var(--space-2) var(--space-2);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--space-2);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .more__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .more__item {
+    scroll-snap-align: start;
+  }
+
+  .more__track.is-dragging {
+    scroll-snap-type: none;
+    cursor: grabbing;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .more__track :global(img) {
+    -webkit-user-drag: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .more__track {
+      cursor: grab;
+    }
+
+  }
+
+  @media (min-width: 768px) {
+    .portfolio__grid {
+      grid-template-columns: repeat(12, 1fr);
+    }
+  }
+</style>

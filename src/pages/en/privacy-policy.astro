@@ -1,0 +1,148 @@
+---
+import { site } from '../../data/site';
+import { routes } from '../../i18n';
+import Legal from '../../layouts/Legal.astro';
+
+const { company } = site;
+const summary = [
+  `Your personal data is controlled by ${company.name}`,
+  'The website does not set cookies and does not use analytics or advertising tools.',
+  'The enquiry form does not send data to our server. It prepares a message that you send from your own email app.',
+  'Before sharing full property details we verify your identity, as required by anti-money laundering law.',
+  'You have the right to access, rectify and erase your data, to restrict processing, to object and to lodge a complaint with the Polish supervisory authority (UODO).',
+];
+---
+
+<Legal lang="en" route="privacy" title="Privacy policy" summary={summary}>
+  <section>
+    <h2>Data controller</h2>
+    <p>
+      The controller of your personal data is <strong>{company.name}</strong>, registered office at {company.address},
+      entered in the register of entrepreneurs of the Polish National Court Register under KRS number {company.krs},
+      tax identification number (NIP) {company.nip}, statistical number (REGON) {company.regon}, share capital
+      {' '}{company.capital.en} (the “Controller”).
+    </p>
+    <p>
+      For any matter concerning personal data, write to{' '}
+      <a href={`mailto:${site.email}`}>{site.email}</a>{' '}or by post to the registered office.
+    </p>
+  </section>
+
+  <section>
+    <h2>What data we process</h2>
+    <ul>
+      <li>
+        <strong>Enquiry data:</strong> full name, phone number or email address, the content of your message and the email
+        address you send it from. The form on this website does not transmit data to our server. It prepares a ready message
+        that you send yourself from your email app.
+      </li>
+      <li>
+        <strong>Identity verification data:</strong> details from your identity document and other information required by
+        the Polish Act of 1 March 2018 on counteracting money laundering and terrorist financing, collected before full
+        property details are shared or a brokerage agreement is signed.
+      </li>
+      <li>
+        <strong>Technical data:</strong> IP address, date and time of the visit and browser type, recorded automatically in
+        server logs by the hosting provider.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Purposes and legal bases</h2>
+    <ul>
+      <li>
+        Replying to your enquiry and contact before an agreement is concluded: Article 6(1)(b) GDPR (steps taken at your
+        request prior to entering into a contract) and Article 6(1)(f) GDPR (the Controller’s legitimate interest in
+        conducting correspondence).
+      </li>
+      <li>
+        Identity verification and customer due diligence: Article 6(1)(c) GDPR in connection with the Act on counteracting
+        money laundering and terrorist financing. A real estate broker is an obligated institution under that Act.
+      </li>
+      <li>Performance of a real estate brokerage agreement: Article 6(1)(b) GDPR.</li>
+      <li>Establishing, exercising or defending legal claims: Article 6(1)(f) GDPR.</li>
+      <li>Security and proper operation of the website (server logs): Article 6(1)(f) GDPR.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Retention periods</h2>
+    <ul>
+      <li>Enquiry correspondence: until the enquiry is handled, then until any related claims become time-barred.</li>
+      <li>
+        Identity verification records: 5 years from the first day of the year following the year in which the business
+        relationship ended or the occasional transaction was carried out (Article 49 of the Act on counteracting money
+        laundering and terrorist financing).
+      </li>
+      <li>Brokerage agreement data: for the term of the agreement and until related claims become time-barred.</li>
+      <li>Server logs: {company.logRetention}.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Recipients of data</h2>
+    <ul>
+      <li>Website hosting provider: {company.hosting}.</li>
+      <li>Email provider: {company.mailbox}.</li>
+      <li>Law firms and notaries, to the extent necessary to complete a transaction.</li>
+      <li>
+        Public authorities where the law requires disclosure, including the General Inspector of Financial Information.
+      </li>
+    </ul>
+    <p>
+      We do not transfer data outside the European Economic Area. If a service provider processes data outside the EEA, this
+      is based on a European Commission adequacy decision or standard contractual clauses.
+    </p>
+  </section>
+
+  <section>
+    <h2>Your rights</h2>
+    <ul>
+      <li>access to your data and a copy of it (Article 15 GDPR),</li>
+      <li>rectification (Article 16 GDPR),</li>
+      <li>erasure (Article 17 GDPR),</li>
+      <li>restriction of processing (Article 18 GDPR),</li>
+      <li>portability of data processed under a contract (Article 20 GDPR),</li>
+      <li>objection to processing based on legitimate interest (Article 21 GDPR),</li>
+      <li>
+        a complaint to the President of the Personal Data Protection Office (UODO), ul. Stawki 2, 00-193 Warszawa, Poland.
+      </li>
+    </ul>
+    <p>
+      The right to erasure does not cover records that we must keep under the Act on counteracting money laundering and
+      terrorist financing.
+    </p>
+  </section>
+
+  <section>
+    <h2>Providing data</h2>
+    <p>
+      Providing data in an enquiry is voluntary, but we cannot reply without it. Providing identity verification data is a
+      condition for sharing full property details and concluding an agreement, because the law requires it.
+    </p>
+  </section>
+
+  <section>
+    <h2>Cookies and third-party tools</h2>
+    <p>
+      The website does not set cookies, does not use analytics or advertising tools and does not load resources from
+      third-party servers. Fonts are hosted together with the website. If this changes, we will update this policy and ask
+      for consent where the law requires it.
+    </p>
+  </section>
+
+  <section>
+    <h2>Automated decisions</h2>
+    <p>We do not make decisions based solely on automated processing, including profiling.</p>
+  </section>
+
+  <section>
+    <h2>Changes to this policy</h2>
+    <p>
+      The current version of this policy is always available on this page. The rules for using the website are set out in
+      the{' '}
+      <a href={routes.terms.en}>terms</a>.
+    </p>
+  </section>
+</Legal>

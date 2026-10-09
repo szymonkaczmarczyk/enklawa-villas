@@ -1,0 +1,403 @@
+---
+import { site } from '../data/site';
+import { dictionaries, routes, type Lang } from '../i18n';
+import Button from './Button.astro';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const d = t.dossier;
+const choices: { path: 'buy' | 'sell'; icon: IconName; key: string }[] = [
+  { path: 'buy', icon: 'compass', key: '1' },
+  { path: 'sell', icon: 'key', key: '2' },
+];
+const copy = {
+  email: site.email,
+  choices: { buy: d.choices.buy.title, sell: d.choices.sell.title },
+  details: d.details,
+  copied: d.done.copied,
+  copy: d.done.copy,
+  mail: d.mail,
+};
+---
+
+<dialog class="dossier" aria-label={t.cta} data-dossier data-enter="48" data-lenis-prevent data-copy={JSON.stringify(copy)}>
+  <div class="dossier__bar">
+    <button class="dossier__close" type="button" aria-keyshortcuts="Escape" data-dossier-close>
+      <Icon name="close" size={22} />
+      <span>{d.close}</span>
+      <kbd aria-hidden="true">Esc</kbd>
+    </button>
+    <div class="dossier__progress" aria-hidden="true">
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <section class="dossier__step" data-step="choose">
+    <h2 class="dossier__title t-h3" tabindex="-1">{d.question}</h2>
+    <div class="dossier__choices">
+      {
+        choices.map(({ path, icon, key }) => (
+          <button class="choice" type="button" data-choice={path} aria-keyshortcuts={key}>
+            <Icon name={icon} size={28} class="choice__icon" />
+            <span class="choice__title">{d.choices[path].title}</span>
+            <span class="choice__text">{d.choices[path].text}</span>
+            <kbd class="choice__key" aria-hidden="true">{key}</kbd>
+          </button>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="dossier__step" data-step="details" hidden>
+    <h2 class="dossier__title t-h3" tabindex="-1" data-details-title>{d.details.buy.title}</h2>
+    <p class="dossier__lead">{d.details.lead}</p>
+    <p class="dossier__context" data-context hidden>
+      <Icon name="mapPin" size={16} />
+      <span>{d.details.context}:</span>
+      <strong data-context-value></strong>
+    </p>
+
+    <form class="form" novalidate data-form>
+      <div class="field">
+        <label class="field__label" for="dossier-name">{d.details.name}</label>
+        <input class="field__input" id="dossier-name" name="name" type="text" autocomplete="name" required aria-describedby="dossier-name-error" />
+        <p class="field__error" id="dossier-name-error" data-error="name" hidden>
+          <Icon name="warning" size={18} />
+          <span>{d.details.nameError}</span>
+        </p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="dossier-contact">{d.details.contact}</label>
+        <input
+          class="field__input"
+          id="dossier-contact"
+          name="contact"
+          type="text"
+          autocomplete="email"
+          autocapitalize="none"
+          spellcheck="false"
+          required
+          aria-describedby="dossier-contact-hint dossier-contact-error"
+        />
+        <p class="field__hint" id="dossier-contact-hint">{d.details.contactHint}</p>
+        <p class="field__error" id="dossier-contact-error" data-error="contact" hidden>
+          <Icon name="warning" size={18} />
+          <span>{d.details.contactError}</span>
+        </p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="dossier-note">
+          <span data-note-label>{d.details.buy.note}</span>{' '}
+          <span class="field__optional">({d.details.optional})</span>
+        </label>
+        <textarea class="field__input field__input--area" id="dossier-note" name="note" rows="3" autocomplete="off" aria-describedby="dossier-note-hint"></textarea>
+        <p class="field__hint" id="dossier-note-hint" data-note-hint>{d.details.buy.noteHint}</p>
+      </div>
+
+      <p class="form__privacy">
+        {d.details.privacy} <a class="text-link" href={routes.privacy[lang]}>{d.details.privacyLink}</a>.
+      </p>
+
+      <div class="form__actions">
+        <Button icon="arrowLeft" iconFirst data-dossier-back>{d.back}</Button>
+        <Button variant="solid" type="submit">{d.details.submit}</Button>
+      </div>
+      <p class="form__hint">{d.details.submitHint}</p>
+    </form>
+  </section>
+
+  <section class="dossier__step" data-step="done" hidden>
+    <span class="dossier__done-icon"><Icon name="check" size={28} /></span>
+    <h2 class="dossier__title t-h3" tabindex="-1">{d.done.title}</h2>
+    <p class="dossier__lead">{d.done.text}</p>
+    <p class="dossier__fallback">
+      {d.done.fallback} <a class="text-link" href={`mailto:${site.email}`}>{site.email}</a>.
+    </p>
+    <div class="form__actions">
+      <Button icon="arrowLeft" iconFirst data-dossier-close>{d.done.finish}</Button>
+      <Button icon="copy" data-copy-message><span data-copy-label>{d.done.copy}</span></Button>
+    </div>
+    <p class="visually-hidden" role="status" data-copy-status></p>
+  </section>
+</dialog>
+
+<style>
+  .dossier {
+    inset: 0 0 0 auto;
+    width: min(100%, 640px);
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 0;
+    border-left: 1px solid var(--color-line);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .dossier::backdrop {
+    background: var(--color-scrim);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    animation: backdrop-in 420ms var(--ease-out);
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .dossier__bar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+    padding-inline: var(--space-5);
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-surface);
+  }
+
+  .dossier__close {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--tap);
+    padding-inline: var(--space-1) var(--space-2);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .dossier__progress {
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .dossier__progress span {
+    width: 28px;
+    height: 2px;
+    background: var(--color-line-strong);
+    transition: background-color var(--duration) var(--ease-out);
+  }
+
+  .dossier[data-current='choose'] .dossier__progress span:first-child,
+  .dossier[data-current='details'] .dossier__progress span,
+  .dossier[data-current='done'] .dossier__progress span {
+    background: var(--travertine-100);
+  }
+
+  .dossier__step {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-7) var(--space-5) var(--space-8);
+  }
+
+  .dossier__step[hidden] {
+    display: none;
+  }
+
+  .dossier__title:focus {
+    outline: none;
+  }
+
+  .dossier__lead {
+    color: var(--color-text-muted);
+  }
+
+  .dossier__context {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-line);
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .dossier__context[hidden] {
+    display: none;
+  }
+
+  .dossier__context strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .dossier__choices {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .choice {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-1) var(--space-4);
+    align-items: start;
+    width: 100%;
+    padding: var(--space-5);
+    border: 1px solid var(--color-line-strong);
+    background: linear-gradient(var(--color-surface-raised), var(--color-surface-raised)) no-repeat 0 100% / 100% 0
+      var(--color-bg);
+    text-align: left;
+    transition:
+      border-color var(--duration) var(--ease-out),
+      background-size var(--button-fill-duration) var(--ease-out);
+  }
+
+  .choice:active {
+    border-color: var(--travertine-100);
+    background-size: 100% 100%;
+    transition-duration: var(--duration-fast);
+  }
+
+  .choice :global(.choice__icon) {
+    grid-row: 1 / span 2;
+    color: var(--color-accent);
+  }
+
+  .choice__title {
+    font-size: var(--fs-h4);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .choice__text {
+    grid-column: 2;
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .choice__key {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .field__label {
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .field__optional {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+
+  .field__input {
+    width: 100%;
+    min-height: 52px;
+    padding: 14px var(--space-4);
+    border: 1px solid var(--color-line-strong);
+    border-radius: 0;
+    background: var(--color-bg);
+    transition: border-color var(--duration) var(--ease-out);
+    appearance: none;
+  }
+
+  .field__input--area {
+    min-height: 112px;
+    resize: vertical;
+  }
+
+  .field__input:focus-visible {
+    border-color: var(--travertine-100);
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .field__input[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+
+  .field__hint {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .field__error {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    color: var(--color-error);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .field__error[hidden] {
+    display: none;
+  }
+
+  .field__error :global(svg) {
+    flex: none;
+    margin-top: 1px;
+  }
+
+  .form__privacy,
+  .form__hint {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .dossier__done-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--color-success);
+    color: var(--color-success);
+  }
+
+  .dossier__fallback {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .choice:hover {
+      border-color: var(--travertine-100);
+      background-size: 100% 100%;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .dossier__bar {
+      padding-inline: var(--space-7);
+    }
+
+    .dossier__step {
+      padding: var(--space-8) var(--space-7) var(--space-9);
+    }
+  }
+
+</style>

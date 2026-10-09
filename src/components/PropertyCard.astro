@@ -1,0 +1,246 @@
+---
+import { Picture } from 'astro:assets';
+import type { Placement, Property } from '../data/properties';
+import { dictionaries, formatPrice, residencePaths, type Lang } from '../i18n';
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  property: Property;
+  lang: Lang;
+  level: 3 | 4;
+}
+
+const { property, lang, level } = Astro.props;
+const t = dictionaries[lang];
+const Heading = level === 3 ? 'h3' : 'h4';
+const name = property.name[lang];
+const location = property.location[lang];
+const sizes: Record<Placement, string> = {
+  wide: '(min-width: 1440px) 1312px, 92vw',
+  left: '(min-width: 1200px) 56vw, (min-width: 768px) 46vw, 92vw',
+  right: '(min-width: 1200px) 38vw, (min-width: 768px) 46vw, 92vw',
+  more: '(min-width: 1200px) 420px, 80vw',
+};
+---
+
+<article class="card" data-placement={property.placement} aria-labelledby={`card-${property.id}`} data-card data-button-scope>
+  <div class="card__media" data-card-media>
+    <Picture
+      src={property.image}
+      alt={property.alt[lang]}
+      formats={['avif', 'webp']}
+      widths={[480, 800, 1280, property.image.width]}
+      sizes={sizes[property.placement]}
+      quality={72}
+      class="card__image"
+      style={`object-position: ${property.focus}`}
+    />
+    <video
+      class="card__video"
+      src={property.preview}
+      muted
+      playsinline
+      preload="none"
+      disablepictureinpicture
+      aria-hidden="true"
+      tabindex="-1"
+      style={`object-position: ${property.focus}`}
+      data-card-video
+    ></video>
+  </div>
+  <a class="card__overlay" href={residencePaths(property.id)[lang]} tabindex="-1" aria-hidden="true"></a>
+  <div class="card__body" data-card-body>
+    <div class="card__heading">
+      <Heading class="card__name" id={`card-${property.id}`}>
+        <a class="card__link" href={residencePaths(property.id)[lang]}>{name}</a>
+      </Heading>
+      <p class="card__location">
+        <Icon name="mapPin" size={16} />
+        {location}
+      </p>
+    </div>
+    <div class="card__footer">
+      <p class="card__price">
+        {
+          property.transactionPrice ? (
+            <>
+              {t.portfolio.transactionPrice}: <strong>{formatPrice(property.transactionPrice, lang)}</strong>
+            </>
+          ) : (
+            t.portfolio.priceOnRequest
+          )
+        }
+      </p>
+      <Button
+        compact
+        class="card__action"
+        aria-label={`${t.portfolio.ask}: ${name}`}
+        data-dossier-open="buy"
+        data-dossier-context={`${name}, ${location}`}
+      >
+        {t.portfolio.ask}
+      </Button>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-5);
+  }
+
+  .card__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--color-surface);
+  }
+
+  .card[data-placement='wide'] .card__media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .card[data-placement='right'] .card__media,
+  .card[data-placement='more'] .card__media {
+    aspect-ratio: 4 / 5;
+  }
+
+  .card__media :global(picture) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .card__media :global(.card__image),
+  .card__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  .card__video {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 700ms var(--ease-out),
+      transform var(--duration-slow) var(--ease-out);
+  }
+
+  .card__video.is-playing {
+    opacity: 1;
+  }
+
+  .card__body {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .card__heading {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .card__name {
+    font-size: var(--fs-h3);
+  }
+
+  .card[data-placement='more'] .card__name {
+    font-size: var(--fs-h4);
+    letter-spacing: var(--tracking-body);
+    line-height: 1.3;
+  }
+
+  .card__location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+  }
+
+  .card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .card__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .card__link:focus-visible {
+    outline: none;
+  }
+
+  .card:has(.card__link:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+  }
+
+  .card :global(.card__action) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card[data-placement='more'] .card__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card__price {
+    color: var(--color-text-muted);
+  }
+
+  .card__price strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover :global(.card__image),
+    .card:hover .card__video {
+      transform: scale(1.03);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .card[data-placement='wide'] {
+      grid-column: 1 / -1;
+    }
+
+    .card[data-placement='wide'] .card__media {
+      aspect-ratio: 21 / 9;
+    }
+
+    .card[data-placement='left'] {
+      grid-column: 1 / 7;
+    }
+
+    .card[data-placement='right'] {
+      grid-column: 7 / -1;
+      margin-top: var(--space-9);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .card[data-placement='left'] {
+      grid-column: 1 / 8;
+    }
+
+    .card[data-placement='right'] {
+      grid-column: 9 / -1;
+      margin-top: var(--space-10);
+    }
+  }
+</style>

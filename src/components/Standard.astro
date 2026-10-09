@@ -1,0 +1,156 @@
+---
+import { dictionaries, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+---
+
+<section class="standard" id={t.anchors.standard} aria-labelledby="standard-title" data-standard>
+  <div class="standard__inner container">
+    <header class="standard__header">
+      <h2 class="t-h2" id="standard-title" data-reveal>{t.standard.title}</h2>
+      <p class="t-lead muted" data-reveal>{t.standard.lead}</p>
+    </header>
+
+    <ol class="standard__grid" role="list" data-standard-grid>
+      {
+        t.standard.items.map((item) => (
+          <li class="standard__item">
+            <span class="standard__rule" aria-hidden="true" data-standard-rule />
+            <p class="standard__figure" data-standard-part>
+              <span class="standard__figure-visual" aria-hidden="true">
+                {item.prefix && <span class="standard__prefix">{item.prefix}</span>}
+                <span>{item.value}</span>
+                <span class="standard__unit">{item.unit}</span>
+              </span>
+              <span class="visually-hidden">{item.spoken}</span>
+            </p>
+            <h3 class="standard__label t-h4" data-standard-part>
+              {item.label}
+            </h3>
+            <p class="standard__text" data-standard-part>
+              {item.text}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .standard {
+    position: relative;
+    z-index: var(--z-content);
+    padding-block: var(--space-11) var(--space-10);
+    background: linear-gradient(
+      to bottom,
+      rgb(18 19 22 / 0) 0,
+      rgb(18 19 22 / 0.78) 180px,
+      rgb(18 19 22 / 0.94) 420px,
+      var(--color-bg) 640px
+    );
+  }
+
+  .standard__inner {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .standard__header {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .standard__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .standard__item {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding-block: var(--space-6);
+  }
+
+  .standard__rule {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: var(--color-line-strong);
+    transform-origin: left top;
+  }
+
+  .standard__figure {
+    margin-bottom: var(--space-2);
+  }
+
+  .standard__figure-visual {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.28em;
+    font-size: var(--fs-figure);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--tracking-heading);
+    font-variant-numeric: lining-nums;
+  }
+
+  .standard__prefix,
+  .standard__unit {
+    color: var(--color-accent);
+    font-size: var(--fs-body-lg);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body);
+  }
+
+  .standard__text {
+    max-width: 34ch;
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 768px) {
+    .standard__grid {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: var(--space-7);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .standard {
+      display: grid;
+      align-content: end;
+      min-height: 100svh;
+    }
+
+    .standard__grid {
+      grid-template-columns: repeat(4, 1fr);
+      column-gap: 0;
+    }
+
+    .standard__item {
+      padding: var(--space-2) var(--space-6) var(--space-2);
+    }
+
+    .standard__item:first-child {
+      padding-left: 0;
+    }
+
+    .standard__rule {
+      inset: 0 auto 0 0;
+      width: 1px;
+      height: auto;
+    }
+
+    .standard__item:first-child .standard__rule {
+      display: none;
+    }
+  }
+</style>

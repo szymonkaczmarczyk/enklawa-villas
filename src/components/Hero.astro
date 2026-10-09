@@ -1,0 +1,135 @@
+---
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import landscape from '../assets/hero/landscape.jpg';
+import portrait from '../assets/hero/portrait.jpg';
+import { dictionaries, type Lang } from '../i18n';
+import Button from './Button.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const portraitQuery = '(max-aspect-ratio: 4/5)';
+
+const poster = async (src: ImageMetadata, format: 'avif' | 'webp' | 'jpg', widths: number[]) =>
+  getImage({ src, format, widths, quality: format === 'jpg' ? 80 : 70 });
+
+const [portraitAvif, portraitWebp, landscapeAvif, landscapeWebp, landscapeJpg] = await Promise.all([
+  poster(portrait, 'avif', [608]),
+  poster(portrait, 'webp', [608]),
+  poster(landscape, 'avif', [960, 1440, 1920]),
+  poster(landscape, 'webp', [960, 1440, 1920]),
+  poster(landscape, 'jpg', [1920]),
+]);
+---
+
+<section class="hero" aria-labelledby="hero-title" data-hero>
+  <div class="hero__media" data-hero-media>
+    <picture class="hero__poster">
+      <source media={portraitQuery} type="image/avif" srcset={portraitAvif.srcSet.attribute} />
+      <source media={portraitQuery} type="image/webp" srcset={portraitWebp.srcSet.attribute} />
+      <source type="image/avif" srcset={landscapeAvif.srcSet.attribute} sizes="100vw" />
+      <source type="image/webp" srcset={landscapeWebp.srcSet.attribute} sizes="100vw" />
+      <img src={landscapeJpg.src} alt={t.hero.posterAlt} width="1920" height="1080" fetchpriority="high" />
+    </picture>
+    <video
+      class="hero__video"
+      muted
+      playsinline
+      preload="auto"
+      disablepictureinpicture
+      aria-hidden="true"
+      tabindex="-1"
+      data-hero-video
+    ></video>
+    <script is:inline define:vars={{ portraitQuery }}>
+      const video = document.currentScript.previousElementSibling;
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const framing = matchMedia(portraitQuery).matches ? 'portrait' : 'landscape';
+        const format = video.canPlayType('video/webm; codecs="vp9"') ? 'webm' : 'mp4';
+        video.src = `/video/hero-${framing}.${format}`;
+      }
+    </script>
+    <div class="hero__shade" aria-hidden="true"></div>
+  </div>
+
+  <div class="hero__content container">
+    <p class="hero__eyebrow t-caps" data-hero-item>{t.hero.eyebrow}</p>
+    <h1 class="hero__title t-h1" id="hero-title" data-hero-title>{t.hero.title}</h1>
+    <p class="hero__lead t-lead" data-hero-item>{t.hero.lead}</p>
+    <div data-hero-item>
+      <Button variant="glass" data-dossier-open>{t.cta}</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    z-index: var(--z-content);
+    display: grid;
+    min-height: 100svh;
+    overflow: clip;
+    isolation: isolate;
+    background: var(--color-bg);
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero__poster,
+  .hero__poster img,
+  .hero__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__video {
+    opacity: 0;
+    transition: opacity 600ms var(--ease-out);
+  }
+
+  .hero__video.is-playing {
+    opacity: 1;
+  }
+
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgb(18 19 22 / 0.7) 0, rgb(18 19 22 / 0) 22%),
+      linear-gradient(to right, rgb(18 19 22 / 0.66) 0, rgb(18 19 22 / 0) 62%),
+      linear-gradient(to top, var(--color-bg) 0, rgb(18 19 22 / 0.5) 26%, rgb(18 19 22 / 0) 58%);
+  }
+
+  .hero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: var(--space-5);
+    padding-top: calc(var(--header-height) + var(--space-7));
+    padding-bottom: max(var(--space-9), calc(env(safe-area-inset-bottom, 0px) + var(--space-7)));
+  }
+
+  .hero__eyebrow {
+    color: var(--color-accent);
+  }
+
+  .hero__title {
+    max-width: 11em;
+  }
+
+  .hero__lead {
+    max-width: 46ch;
+  }
+</style>

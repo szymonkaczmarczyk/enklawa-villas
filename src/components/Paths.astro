@@ -1,0 +1,120 @@
+---
+import { dictionaries, type Lang } from '../i18n';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = dictionaries[lang];
+const options: { path: 'buy' | 'sell'; icon: IconName }[] = [
+  { path: 'buy', icon: 'compass' },
+  { path: 'sell', icon: 'key' },
+];
+---
+
+<section class="paths" id={t.anchors.contact} aria-labelledby="paths-title">
+  <div class="paths__inner container">
+    <h2 class="paths__title t-h2" id="paths-title" data-reveal>{t.paths.title}</h2>
+    <div class="paths__grid">
+      {
+        options.map(({ path, icon }) => (
+          <button class="path" type="button" data-dossier-open={path} data-reveal>
+            <Icon name={icon} size={32} class="path__icon" />
+            <span class="path__title t-h3">{t.paths[path].title}</span>
+            <span class="path__text">{t.paths[path].text}</span>
+            <Icon name="arrowRight" size={24} class="path__arrow" />
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .paths {
+    position: relative;
+    z-index: var(--z-content);
+    padding-block: var(--space-10);
+    border-top: 1px solid var(--color-line);
+    background: var(--color-bg);
+  }
+
+  .paths__inner {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .paths__title {
+    max-width: 18em;
+  }
+
+  .paths__grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .path {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-4);
+    min-height: 280px;
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    background: linear-gradient(var(--color-surface-raised), var(--color-surface-raised)) no-repeat 0 100% / 100% 0
+      var(--color-surface);
+    text-align: left;
+    transition:
+      background-size var(--button-fill-duration) var(--ease-out),
+      border-color var(--duration) var(--ease-out);
+  }
+
+  .path:active {
+    border-color: var(--color-line-strong);
+    background-size: 100% 100%;
+    transition-duration: var(--duration-fast);
+  }
+
+  .path :global(.path__icon) {
+    color: var(--color-accent);
+  }
+
+  .path__title {
+    font-weight: 600;
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-heading);
+  }
+
+  .path__text {
+    max-width: 40ch;
+    color: var(--color-text-muted);
+  }
+
+  .path :global(.path__arrow) {
+    justify-self: end;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .path:hover {
+      border-color: var(--color-line-strong);
+      background-size: 100% 100%;
+    }
+
+    .path:hover :global(.path__arrow) {
+      animation: travel 620ms var(--ease-out);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .paths__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-5);
+    }
+
+    .path {
+      min-height: 340px;
+      padding: var(--space-7);
+    }
+  }
+</style>
